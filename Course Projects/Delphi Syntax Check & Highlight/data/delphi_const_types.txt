@@ -1,0 +1,14 @@
+boolean
+shortstring
+string
+single
+real
+double
+extended
+byte
+char
+integer
+word
+longint
+longword
+int64
