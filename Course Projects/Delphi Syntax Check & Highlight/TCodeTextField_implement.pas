@@ -86,6 +86,7 @@ begin
     end;
 
   RefreshCaretPos;
+  UpdateCodeVerticalScrollRange(fLines.Count - 1);
 end;
 
 // Procedure to process caret (arrow keys movements)
@@ -163,6 +164,9 @@ begin
     end;
 
   RefreshCaretPos;
+  Refresh;
+
+  UpdateCodeVerticalScrollPos(fLineDisplayStart);
 end;
 
 function TCodeTextField.GetLineCount : Integer;
@@ -179,8 +183,6 @@ begin
   Canvas.Pen.Color := clBlack;
   Canvas.Brush.Color := fBackColor;
   Canvas.Rectangle(0, 0, fSize.x, fSize.y);
-
-  ProgramForm.CodeScrollVertical.Max := fLines.Count;
 
   RedrawLines;
 end;
@@ -224,15 +226,20 @@ begin
             end;
 
           if (fLines[line][i] > Chr(KEY_SPACE)) then
-            Canvas.TextOut(5 + fFontSize.x * (i - 1), 4 + fFontSize.y * line, fLines[line][i]);
+            Canvas.TextOut(5 + fFontSize.x * (i - 1), 4 + fFontSize.y * (line - fLineDisplayStart), fLines[line][i]);
         end;
     end;
 end;
 
 procedure TCodeTextField.RefreshCaretPos;
 begin
+  if (fCaretPos.y > fLineDisplayStart + fDisplayLength - 2) then
+    fLineDisplayStart := fCaretPos.y - fDisplayLength + 1
+  else if (fCaretPos.y < fLineDisplayStart) then
+    fLineDisplayStart := fCaretPos.y;
+
   fCaretObject.Left := Left + 5 + fCaretPos.x * fFontSize.x;
-  fCaretObject.Top := Top + 4 + fCaretPos.y * fFontSize.y;
+  fCaretObject.Top := Top + 4 + (fCaretPos.y - fLineDisplayStart) * fFontSize.y;
 
   // Force show caret
   CodeField.CaretObj.Visible := True;
@@ -345,6 +352,7 @@ begin
   RefreshCaretPos;
   OnLineTextChanged(fCaretPos.y);
   RedrawLinesFromCaretPos;
+  UpdateCodeVerticalScrollRange(fLines.Count - 1);
 end;
 
 procedure TCodeTextField.CopySelection;
@@ -399,8 +407,8 @@ begin
       fLines[fCaretPos.y + (list.Count - 1)] := s;
     end;
 
-  Refresh;
   RefreshCaretPos;
+  Refresh;
 end;
 
 procedure TCodeTextField.OnHomePressed(shiftPressed: Boolean);
@@ -447,6 +455,10 @@ var i, j: LongInt;
 begin
   i := (Y - 4) div fFontSize.y;
   j := X div fFontSize.x;
+
+  if (i >= fDisplayLength) then
+    i := fDisplayLength - 1;
+  Inc(i, fLineDisplayStart);
 
   SetCaretPos(Point(j, i));
 end;
@@ -510,6 +522,7 @@ begin
 
   Refresh;
   RefreshCaretPos;
+  UpdateCodeVerticalScrollRange(fLines.Count - 1);
 end;
 
 function TCodeTextField.GetText : String;
@@ -528,16 +541,21 @@ procedure TCodeTextField.SetStartLine(line: LongInt);
 begin
   fLineDisplayStart := line;
 
+  if ((fCaretPos.y < fLineDisplayStart) or (fCaretPos.y > fLineDisplayStart + fDisplayLength)) then
+    fCaretObject.Left := -10
+  else
+    RefreshCaretPos;
+
   Refresh;
-  RefreshCaretPos;
 end;
 
 procedure TCodeTextField.SetDisplayLength(len: LongInt);
 begin
   fDisplayLength := len;
 
-  Refresh;
   RefreshCaretPos;
+  Refresh;
+  UpdateCodeVerticalScrollRange(fLines.Count - 1);
 end;
 
 function TCodeTextField.GetCharStyle(pos: TPoint) : Byte;
@@ -702,6 +720,8 @@ begin
 
       // Call line style rebuild
       OnLineTextChanged(fCaretPos.y);
+
+      Refresh;
     end;
 end;
 
@@ -748,6 +768,8 @@ begin
     end;
 
   ResetSelection;
+  Refresh;
+  UpdateCodeVerticalScrollRange(fLines.Count - 1);
 end;
 
 procedure TCodeTextField.ResetSelection;
@@ -859,16 +881,36 @@ end;
 procedure TCodeTextField.ProcessDigits(line: LongInt);
 var i          : LongInt;
     tempString : String;
+    digitState : Boolean;
 begin
   tempString := fLineStyles[line];
 
+  digitState := False;
   for i := 1 to Length(fLines[line]) do
     begin
       if (tempString[i] = TextStyle(TEXT_STYLE_NONE)) then
         if IsDigit(fLines[line][i]) then
-          if ((i = 1) or (not IsSymbol(fLines[line][i - 1]))) then
-            if ((i = Length(fLines[line])) or (not IsSymbol(fLines[line][i + 1]))) then
+          begin
+            if (
+              (not digitState)
+                and
+              (
+                (i = 1)
+                  or
+                ((not IsSymbol(fLines[line][i - 1])) and (not IsDigit(fLines[line][i - 1])))
+              )
+            ) then
+              begin
+                digitState := True;
+                tempString[i] := TextStyle(TEXT_STYLE_NUMBER);
+              end
+            else if digitState then
               tempString[i] := TextStyle(TEXT_STYLE_NUMBER);
+          end
+        else
+          begin
+            digitState := False;
+          end;
     end;
 
   SetLineStyle(line, tempString);
@@ -902,12 +944,12 @@ begin
 
   OnLineTextChanged(fCaretPos.y + 1);
 
-  // Refresh line styles
-  RedrawLinesFromCaretPos;
-
   // Update caret pos
   fCaretPos.x := 0;
   Inc(fCaretPos.y);
+
+  // Refresh line styles
+  Refresh;
 end;
 
 function TCodeTextField.IsCharSelected(pos: TPoint) : Boolean;

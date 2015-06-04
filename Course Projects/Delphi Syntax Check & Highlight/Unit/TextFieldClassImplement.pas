@@ -10,18 +10,20 @@ end;
 
 procedure TLinesCounter.InitLinesCounter;
 begin
-  fLineStart := 1;
+  fLineStart := 0;
   fLinesCount := 1;
 end;
 
 procedure TLinesCounter.SetLinesCount(value: LongWord);
 begin
   fLinesCount := value;
+  RedrawWidget;
 end;
 
 procedure TLinesCounter.SetStartLine(value: LongWord);
 begin
   fLineStart := value;
+  RedrawWidget;
 end;
 
 procedure TLinesCounter.RedrawWidget;
@@ -37,7 +39,7 @@ begin
   Canvas.Font.Style := [fsBold];
 
   for i := 0 to fLinesCount - 1 do
-    Canvas.TextOut(5, 4 + i * (-CodeFont.Height + LINE_SPACING), IntToStr(i + fLineStart));
+    Canvas.TextOut(5, 4 + i * LongInt(-CodeFont.Height + LINE_SPACING), IntToStr(i + fLineStart + 1));
 end;
 
 

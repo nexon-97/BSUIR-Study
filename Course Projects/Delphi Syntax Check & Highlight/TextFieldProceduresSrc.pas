@@ -15,7 +15,7 @@ begin
 
   TextLinesCounter.Left := TEXT_FIELD_MARGIN;
   TextLinesCounter.Top := ProgramForm.FilenamesTab.Height + TOOLBOX_HEIGHT + TEXT_FIELD_MARGIN;
-  TextLinesCounter.LinesCount := CodeField.WidgetSize.y div (-CodeFont.Height + LINE_SPACING) - 1;
+  TextLinesCounter.LinesCount := CodeField.WidgetSize.y div (-CodeFont.Height + LINE_SPACING);
   TextLinesCounter.TempHeight := CodeField.WidgetSize.y;
 
   CodeField.DisplayLength := TextLinesCounter.LinesCount;
@@ -26,6 +26,8 @@ begin
   ProgramForm.CodeScrollHorizontal.Left := CodeField.Left + 1;
   ProgramForm.CodeScrollHorizontal.Top := CodeField.Top + CodeField.WidgetSize.y + 4;
   ProgramForm.CodeScrollHorizontal.Width := CodeField.WidgetSize.x - 2;
+
+  ProgramForm.CodeScrollVertical.Max := CodeField.Lines.Count - LongInt(TextLinesCounter.LinesCount);
 
   RefreshLinesDisplay;
   CodeField.RefreshCaretPos;
@@ -51,7 +53,7 @@ var i : LongInt;
 begin
   Result := not IsKeyword(1, key);
 
-  if ((Length(key) > 0) and (not IsSymbol(key[1]))) then
+  if ((Length(key) = 0) or ((Length(key) > 0) and (not IsSymbol(key[1])))) then
     Result := False;
 
   if Result then
@@ -65,21 +67,14 @@ begin
       end;
 end;
 
-function GetFirstIdentifier(srcString: String; pos: LongInt) : String;
-var i         : LongInt;
-    notSymbol : Boolean;
+function IsCorrectTypeName(const key: String) : Boolean;
 begin
-  Result := EMPTY_STRING;
+  Result := Length(key) > 0;
 
-  notSymbol := (pos <= Length(srcString)) and (not IsSymbol(srcString[pos]));
-  if ((not notSymbol) and (pos <= Length(srcString))) then
-    Result := srcString[pos];
-
-  for i := pos + 1 to Length(srcString) do
-    if (IsDigit(srcString[i]) or IsSymbol(srcString[i])) then
-      Result := Result + srcString[i]
-    else
-      break;
+  if Result then
+    Result := IsIdentifier(key) or
+              ((key[1] = '^') and IsIdentifier(Copy(key, 2, Length(key) - 1))) or
+              (UpperCase(key) = 'ARRAY');
 end;
 
 function IsKeyword(pos: LongInt; str: String) : Boolean;
@@ -100,7 +95,10 @@ begin
       currentElement := FindElement(c, currentList);
       
       if not Assigned(currentElement) then
-        break
+        begin
+          currentList := nil;
+          break;
+        end
       else
         currentList := currentElement^.childList;
     end;
@@ -108,33 +106,6 @@ begin
   breakerElement := FindElement(KEYWORD_BREAKER, currentList);
   if Assigned(breakerElement) then
     Result := True;
-end;
-
-function GetKeyword(pos: LongInt; str: String) : String;
-var c              : Char;
-    i              : LongInt;
-    currentList    : TUserListPtr;
-    currentElement : TUserListElementPtr;
-    breakerElement : TUserListElementPtr;
-begin
-  Result := EMPTY_STRING;
-
-  currentList := keywordsList;
-
-  for i := 1 to Length(str) do
-    begin
-      c := UpCase(str[i]);
-
-      currentElement := FindElement(c, currentList);
-      
-      if not Assigned(currentElement) then
-        break
-      else
-        begin
-          currentList := currentElement^.childList;
-          Result := Result + str[i];
-        end;
-    end;
 end;
 
 procedure LoadKeywords;
@@ -146,7 +117,7 @@ begin
 
   SetLength(keywords, 256);
   i := 0;
-  while not eof(f) do
+  while not EoF(f) do
     begin
       ReadLn(f, keywords[i]);
       Inc(i);
@@ -219,20 +190,22 @@ begin
   AssignFile(tempFile, fileName);
   Rewrite(tempFile);
 
-  write(tempFile, contents);
+  Write(tempFile, contents);
 
   CloseFile(tempFile);
 end;
 
 procedure RefreshLinesDisplay;
 begin
-  //TextLinesCounter.StartLine := MyTextView.GetFirstVisibleLine + 1;
   TextLinesCounter.RedrawWidget;
 end;
 
 procedure UpdateActiveTextField;
 begin
   CodeField.LoadText(FilesManager.GetActiveFileContents);
+  
+  ProgramForm.CodeScrollVertical.Position := 0;
+  ProgramForm.CodeScrollVertical.Min := 0;
 end;
 
 procedure UpdateFilenamesTab;
@@ -265,18 +238,21 @@ var listElement: TUserListElementPtr;
 begin
   Result := nil;
 
-  // Search for letter
-  listElement := list^.first;
-
-  while (listElement <> nil) do
+  if Assigned(list) then
     begin
-      if (listElement^.letter = data) then
-        begin
-          Result := listElement;
-          break;
-        end;
+      // Search for letter
+      listElement := list^.first;
 
-      listElement := listElement^.next;
+      while (listElement <> nil) do
+        begin
+          if (listElement^.letter = data) then
+            begin
+              Result := listElement;
+              break;
+            end;
+
+          listElement := listElement^.next;
+        end;
     end;
 end;
 
@@ -344,28 +320,6 @@ begin
 
   Result^.first := nil;
   Result^.last := nil;
-end;
-
-function ListEmpty(list: TUserListPtr) : Boolean;
-begin
-  Result := (list^.first = nil);
-end;
-
-function ListSize(list: TUserListPtr) : LongInt;
-var currentElement: TUserListElementPtr;
-begin
-  Result := 0;
-
-  if Assigned(list) then
-    begin
-      currentElement := list^.first;
-
-      while Assigned(currentElement) do
-        begin
-          Inc(Result);
-          currentElement := currentElement^.next;
-        end;
-    end;
 end;
 
 function CreateStack : TStackPtr;
@@ -507,18 +461,302 @@ begin
     end;
 end;
 
-function SectionByConstant(identifier: String) : Byte;
+procedure UpdateCodeVerticalScrollPos(pos: LongInt);
 begin
-  Result := NO_SECTION;
+  VerticalScrollChange := False;
 
-  if (identifier = 'CONST') then
-    Result := CONST_SECTION
-  else if (identifier = 'VAR') then
-    Result := VAR_SECTION
-  else if (identifier = 'TYPE') then
-    Result := TYPE_SECTION
-  else if (identifier = 'PROGRAM') then
-    Result := PROGRAM_SECTION
-  else if (identifier = 'USES') then
-    Result := USES_SECTION;
+  ProgramForm.CodeScrollVertical.Position := pos;
+  TextLinesCounter.StartLine := ProgramForm.CodeScrollVertical.Position;
+
+  VerticalScrollChange := True;
+end;
+
+procedure UpdateCodeVerticalScrollRange(range: LongInt);
+begin
+  VerticalScrollChange := False;
+
+  ProgramForm.CodeScrollVertical.Max := range;
+
+  VerticalScrollChange := True;
+end;
+
+procedure InvertString(var src: String);
+var i : LongInt;
+    t : Char;
+begin
+  for i := 0 to (Length(src) - 1) div 2 do
+    begin
+      t := src[i + 1];
+      src[i + 1] := src[Length(src) - i];
+      src[Length(src) - i] := t;
+    end;
+end;
+
+function IsNumber(const src: String; var convertedNumber: LongInt) : Boolean;
+var i          : LongInt;
+    tempString : String;
+begin
+  Result := Length(src) > 0;
+  tempString := src;
+
+  if Result then
+    if (src[1] = '-') then
+      begin
+        tempString := '-';
+
+        // Skip trash between '-' and number beginning
+        for i := 2 to Length(src) do
+          if (Ord(src[i]) > 32) then
+            begin
+              tempString := tempString + Copy(src, i, Length(src));
+              break;
+            end;
+      end;
+
+  if Result then
+    for i := 1 to Length(tempString) do
+      if not (IsDigit(tempString[i]) or ((i = 1) and (tempString[1] = '-'))) then
+        begin
+          Result := False;
+          break;
+        end;
+
+  if Result then
+    convertedNumber := StrToInt(tempString);
+end;
+
+function IsModuleName(const src: String) : Boolean;
+var i       : LongInt;
+    modules : TStringList;
+begin
+  modules := SplitBySubString(src, '.');
+
+  Result := True;
+  for i := 0 to modules.Count - 1 do
+    if not IsIdentifier(modules[i]) then
+      begin
+        Result := False;
+        break;
+      end;
+end;
+
+function IsDereference(const src: String) : Boolean;
+begin
+  Result := (Length(src) > 0);
+
+  if Result then
+    begin
+      if ((not IsIdentifier(src)) and (Length(src) > 1)) then
+        begin
+          Result := IsIdentifier(Trim(Copy(src, 1, Length(src) - 1))) and (src[Length(src)] = '^');
+        end
+      else
+        Result := True;
+    end;
+end;
+
+function IsVariable(const src: String) : Boolean;
+var i      : LongInt;
+    fields : TStringList;
+begin
+  fields := SplitBySubString(src, '.');
+
+  Result := True;
+  for i := 0 to fields.Count - 1 do
+    if not IsIdentifier(fields[i]) then
+      if not ((i = fields.Count - 1) and (IsDereference(fields[i]))) then
+        begin
+          Result := False;
+          break;
+        end;
+end;
+
+function IsBinaryOperator(const src: String) : Boolean;
+begin
+  Result := (src = 'div') or (src = 'mod') or (src = '*')   or
+            (src = '/')   or (src = 'and') or (src = 'or')  or
+            (src = 'xor') or (src = 'shl') or (src = 'shr') or
+            (src = '<')   or (src = '>')   or (src = '<>')  or
+            (src = '<=')  or (src = '>=')  or (src = '=');
+end;
+
+function IsPrefixOperator(const src: String) : Boolean;
+begin
+  Result := (src = '+') or (src = '-') or (src = 'not');
+end;
+
+function IsOperator(const src: String) : Boolean;
+begin
+  Result := IsPrefixOperator(src) or IsBinaryOperator(src);
+end;
+
+function IsCorrectStatement(const src: String) : Boolean;
+var statements     : TStringList;
+    srcCopy        : String;
+    i, f           : LongInt;
+    braceState     : LongInt;
+    quadBraceState : LongInt;
+    lastCrop       : LongInt;
+    prevOperand    : Boolean;
+begin
+  srcCopy := EMPTY_STRING;
+
+  Result := False;
+  if (Length(src) > 0) then
+    begin
+      srcCopy := src[1];
+      // Get rid from waste
+      for i := 2 to Length(src) do
+        if not ((src[i] = ' ') and (src[i - 1] = ' ')) then
+          srcCopy := srcCopy + src[i];
+
+      // Format string
+      statements := TStringList.Create;
+      braceState := 0;
+      quadBraceState := 0;
+      lastCrop := 1;
+      Result := True;
+      for i := 1 to Length(srcCopy) do
+        begin
+          if ((srcCopy[i] = ' ') and (braceState = 0) and (quadBraceState = 0)) then
+            begin
+              if (i <> lastCrop) then
+                statements.Add(Copy(srcCopy, lastCrop, i - lastCrop));
+              lastCrop := i + 1;
+            end
+          else if ((srcCopy[i] in ['+', '-', '*', '/']) and (braceState = 0) and (quadBraceState = 0)) then
+            begin
+              statements.Add(srcCopy[i]);
+              lastCrop := i + 1;
+            end
+          else if (srcCopy[i] = '[') then
+            Inc(quadBraceState)
+          else if (srcCopy[i] = ']') then
+            begin
+              Dec(quadBraceState);
+              
+              if (quadBraceState < 0) then
+                begin
+                  Result := False;
+                  break;
+                end;
+            end
+          else if (srcCopy[i] = '(') then
+            Inc(braceState)
+          else if (srcCopy[i] = ')') then
+            begin
+              Dec(braceState);
+              
+              if (braceState < 0) then
+                begin
+                  Result := False;
+                  break;
+                end;
+            end;
+        end;
+      statements.Add(Copy(srcCopy, lastCrop, Length(srcCopy)));
+
+      // Check operators order errors
+      prevOperand := False;
+      if Result then
+        for i := 0 to statements.Count - 1 do
+          begin
+            if (IsBinaryOperator(statements[i])) then
+              begin
+                if (not prevOperand) then
+                  begin
+                    Result := False;
+                    break;
+                  end;
+
+                prevOperand := False;
+              end
+            else if IsPrefixOperator(statements[i]) then
+              begin
+                prevOperand := False;
+              end
+            else
+              begin
+                if prevOperand then
+                  begin
+                    Result := False;
+                    break;
+                  end;
+                  
+                prevOperand := True;
+              end;
+              
+            srcCopy := statements[i];
+            srcCopy := EMPTY_STRING;
+          end;
+
+      if Result then
+        for i := 0 to statements.Count - 1 do
+          begin
+            if not (
+              IsArrayElementCall(statements[i]) or
+              IsNumber(statements[i], f) or
+              IsBinaryOperator(statements[i]) or
+              IsOperator(statements[i]) or
+              IsProcedureCall(statements[i])
+            ) then
+              begin
+                Result := False;
+                break;
+              end;
+          end;
+    end;
+end;
+
+function IsArrayElementCall(const src: String) : Boolean;
+var braceLeft      : LongInt;
+    braceRight     : LongInt;
+    offset         : LongInt;
+    lValue         : String;
+    statementParts : TStringList;
+begin
+  offset := 1;
+  statementParts := TStringList.Create;
+
+  repeat
+    braceLeft := PosEx('[', src, offset);
+    braceRight := PosEx(']', src, offset);
+
+    if ((braceLeft > 0) and (braceRight > 0) and (braceLeft < braceRight)) then
+      begin
+        if (offset = 1) then
+          lValue := Trim(Copy(src, offset, braceLeft - 1));
+
+        statementParts.Add(Trim(Copy(src, braceLeft + 1, braceRight - braceLeft - 1)));
+        offset := braceRight + 1;
+      end
+    else if not ((braceLeft = 0) and (braceRight = 0)) then
+      Result := False;
+
+  until (braceLeft = 0) or (braceRight = 0);
+end;
+
+function IsProcedureCall(const src: String) : Boolean;
+var braceLeft     : LongInt;
+    braceRight    : LongInt;
+    paramsSection : String;
+begin
+  Result := Length(src) > 0;
+
+  if Result then
+    begin
+      Result := IsIdentifier(src) or IsVariable(src);
+
+      if not Result then
+        begin
+          braceLeft := Pos('(', src);
+          braceRight := Length(src) - (Pos(')', ReverseString(src)) - 1);
+
+          if (braceLeft > 0) and (braceRight > 0) then
+            begin
+              paramsSection := Trim(Copy(src, braceLeft, braceRight - braceLeft + 1));
+              Result := True;
+            end;
+        end;
+    end;
 end;

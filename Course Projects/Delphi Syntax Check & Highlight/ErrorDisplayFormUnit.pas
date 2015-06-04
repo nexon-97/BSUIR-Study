@@ -19,10 +19,12 @@ type
     { Public declarations }
   end;
 
-procedure DisplayOutputMessage(messageType: Byte; messageText: String);
+procedure DisplayOutputMessage(messageType: Byte; errorLine: LongInt; messageText: String);
+procedure ClearCheckMessages;
 
 var
-  ErrorDisplayForm: TErrorDisplayForm;
+  ErrorDisplayForm : TErrorDisplayForm;
+  CheckedFileName  : String;
 
 implementation
 
@@ -38,14 +40,10 @@ begin
   CheckRichEdit.Lines.Add('[Проверка]');
   CheckRichEdit.SelStart := 0;
   CheckRichEdit.SelLength := Length(CheckRichEdit.Text);
-  CheckRichEdit.SelAttributes.Color := clBlue;
+  CheckRichEdit.SelAttributes.Color := clGreen;
   CheckRichEdit.SelAttributes.Style := [fsBold];
   CheckRichEdit.SelLength := 0;
   CheckRichEdit.SelStart := Length(CheckRichEdit.Text);
-
-  DisplayOutputMessage(0, 'Form created');
-  DisplayOutputMessage(0, 'Form created');
-  DisplayOutputMessage(0, 'Form created');
 end;
 
 procedure TErrorDisplayForm.FormResize(Sender: TObject);
@@ -57,22 +55,54 @@ begin
   CheckRichEdit.Height := ClientHeight - 55;
 end;
 
-procedure DisplayOutputMessage(messageType: Byte; messageText: String);
-var i      : LongInt;
-    offset : LongInt;
+procedure ClearCheckMessages;
+begin
+  with ErrorDisplayForm do
+    while (CheckRichEdit.Lines.Count > 1) do
+      begin
+        CheckRichEdit.Lines.Delete(1);
+      end;
+end;
+
+procedure DisplayOutputMessage(messageType: Byte; errorLine: LongInt; messageText: String);
+var i                : LongInt;
+    offset           : LongInt;
+    len              : LongInt;
+    errorMessageText : String;
+    hintColor        : TColor;
 begin
   with ErrorDisplayForm do
     begin
-      CheckRichEdit.Lines.Add('[Ошибка]: ' + messageText);
+      case messageType of
+          0:
+            begin
+              errorMessageText := '[Ошибка] ';
+              hintColor := clRed;
+            end;
+          1:
+            begin
+              errorMessageText := '[Подсказка] ';
+              hintColor := $FF9400;
+            end;
+        end;
+
+      CheckRichEdit.Lines.Add(errorMessageText + CheckedFileName + ':' + IntToStr(errorLine + 1) + ' - ' + messageText);
 
       offset := 0;
       for i := 0 to CheckRichEdit.Lines.Count - 2 do
         Inc(offset, Length(CheckRichEdit.Lines[i]) + 2);
 
       CheckRichEdit.SelStart := offset;
-      CheckRichEdit.SelLength := 9;
-      CheckRichEdit.SelAttributes.Color := clRed;
+      CheckRichEdit.SelLength := Length(errorMessageText) - 1;
+      CheckRichEdit.SelAttributes.Color := hintColor;
       CheckRichEdit.SelAttributes.Style := [fsBold];
+
+      len := Length(CheckRichEdit.Lines[CheckRichEdit.Lines.Count - 1]);
+      len := len - Length(messageText) - Length(errorMessageText) - 3;
+      CheckRichEdit.SelStart := offset + Length(errorMessageText);
+      CheckRichEdit.SelLength := len;
+      CheckRichEdit.SelAttributes.Color := clBlue;
+      CheckRichEdit.SelAttributes.Style := [];
       
       CheckRichEdit.SelLength := 0;
     end;

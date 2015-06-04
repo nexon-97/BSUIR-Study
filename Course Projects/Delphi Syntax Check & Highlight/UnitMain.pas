@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, StdCtrls, Tabs, ComCtrls, ExtCtrls, RichEdit, ClipBrd,
-  Buttons;
+  Buttons, StrUtils;
 
 {$Include Unit\TextFieldClass}
 {$Include TCodeTextField}
@@ -28,7 +28,6 @@ type
     DeleteBtn: TMenuItem;
     SelectAll: TMenuItem;
     Settings: TMenuItem;
-    Preferences: TMenuItem;
     Style: TMenuItem;
     ExitBtn: TMenuItem;
     FilenamesTab: TTabSet;
@@ -92,6 +91,12 @@ type
     procedure UndoClick(Sender: TObject);
     procedure RedoClick(Sender: TObject);
     procedure SaveBitBtnClick(Sender: TObject);
+    procedure CodeScrollVerticalChange(Sender: TObject);
+    procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
 
   public
@@ -109,6 +114,7 @@ var
   BlinkTimerValue       : LongWord;
   BlinkFrequency        : Word;
   FilenamesTabCanChange : Boolean;
+  VerticalScrollChange  : Boolean;
 
 {$Include TextFieldProcedures}
 
@@ -151,7 +157,6 @@ begin
   CodeField.Visible := True;
   CodeField.Width := FIELD_WIDTH_MAX;
   CodeField.Height := FIELD_HEIGHT_MAX;
-  CodeField.SelectionColor := DEFAULT_SELECTION_COLOR;
   CodeField.Font := CodeFont;
 
   TextCaret := TTextCaret.Create(Self);
@@ -165,6 +170,10 @@ begin
   InitLinesCounter;
 
   FilenamesTabCanChange := True;
+  VerticalScrollChange := True;
+
+  //IsArrayElementCall('sukabitch [a][b][c, d]');
+  //IsCorrectStatement('--Trim(Copy(src+2, 72, 7) --2) * 67 / 2 and 4 mod 9 div 10');
 end;
 
 procedure TProgramForm.FilenamesTabChange(Sender: TObject; NewTab: Integer; var AllowChange: Boolean);
@@ -176,7 +185,7 @@ begin
       FilesManager.UpdateActiveFileContents;
 
       FilesManager.ActiveView := NewTab;
-      CodeField.LoadText(FilesManager.GetActiveFileContents);
+      UpdateActiveTextField;
     end;
 end;
 
@@ -302,7 +311,7 @@ begin
   FilesManager.ActiveView := FilesManager.GetFilesCount - 1;
 
   UpdateFilenamesTab;
-  CodeField.LoadText(FilesManager.GetActiveFileContents);
+  UpdateActiveTextField;
 
   FilenamesTabCanChange := True;
 end;
@@ -364,6 +373,10 @@ procedure TProgramForm.SpellCheckBitBtnClick(Sender: TObject);
 begin
   // Spell-check
   CodeToCheck := CodeField.FormattedCode;
+
+  CheckedFileName := FilesManager.GetActiveFileName;
+  ClearCheckMessages;
+
   RefreshXmlDocument;
   XmlCodeFrame.ShowModal;
 end;
@@ -381,6 +394,47 @@ end;
 procedure TProgramForm.SaveBitBtnClick(Sender: TObject);
 begin
   SaveClick(nil);
+end;
+
+procedure TProgramForm.CodeScrollVerticalChange(Sender: TObject);
+begin
+  if VerticalScrollChange then
+    begin
+      CodeField.StartLine := CodeScrollVertical.Position;
+      TextLinesCounter.StartLine := CodeScrollVertical.Position;
+    end;
+end;
+
+procedure TProgramForm.FormMouseWheelDown(Sender: TObject;
+  Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+begin
+  if VerticalScrollChange then
+    begin
+      CodeScrollVertical.Position := CodeScrollVertical.Position + 3;
+      CodeField.StartLine := CodeScrollVertical.Position;
+      TextLinesCounter.StartLine := CodeScrollVertical.Position;
+    end;
+end;
+
+procedure TProgramForm.FormMouseWheelUp(Sender: TObject;
+  Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+begin
+  if VerticalScrollChange then
+    begin
+      CodeScrollVertical.Position := CodeScrollVertical.Position - 3;
+      CodeField.StartLine := CodeScrollVertical.Position;
+      TextLinesCounter.StartLine := CodeScrollVertical.Position;
+    end;
+end;
+
+procedure TProgramForm.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+var messageBoxResult : Word;
+begin
+  messageBoxResult := MessageBox(Handle, EXIT_MESSAGE, CAUTION_TEXT, MB_YESNO + MB_ICONINFORMATION);
+
+  if (messageBoxResult = IDNo) then
+    Action := caNone;
 end;
 
 end.

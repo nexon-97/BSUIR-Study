@@ -3,7 +3,7 @@ const
   TEXT_FIELD_MARGIN = 5;
   EMPTY_STRING = '';
   DEFAULT_FONT_NAME = 'Courier New';
-  DEFAULT_FONT_SIZE = 16;
+  DEFAULT_FONT_SIZE = 14;
   DEFAULT_NEWFILE_NAME = 'new.pas';
   SAMPLE_FILE_NAME = 'testCode.pas';
 
@@ -18,7 +18,7 @@ const
   DIR_DOWN = 4;
 
   LINE_SPACING = 2;
-  CHAR_SPACING = 1;
+  CHAR_SPACING = 0;
 
   TEXT_STYLE_NONE = 0;
   TEXT_STYLE_SELECTED = 1;
@@ -42,6 +42,10 @@ const
       'Delphi Notepad' + #13#10 +
       'Made by Nexon' + #13#10#13#10 +
       'nexon.97@mail.ru';
+  CAUTION_TEXT = 'Внимание';
+  EXIT_MESSAGE = 'Вы уверены, что хотите выйти из программы?' + #13#10 +
+                 'Все несохраненные данные будут утеряны!' + #13#10 + 
+                 'Выйти?';
 
   OPEN_FILE_FILTER =
       'Project Group File (*.bpg)|*.bpg|' +
@@ -122,8 +126,6 @@ function CreateUserList : TUserListPtr;
 function FindElement(data: Char; list: TUserListPtr) : TUserListElementPtr;
 procedure AddElement(data: Char; list: TUserListPtr);
 procedure BuildKeywordsTree;
-function ListEmpty(list: TUserListPtr) : Boolean;
-function ListSize(list: TUserListPtr) : LongInt;
 
 procedure Cleanup;
 
@@ -143,13 +145,27 @@ procedure UpdateActiveTextField;
 procedure UpdateFilenamesTab;
 procedure CloseCurrentFile;
 
+procedure InvertString(var src: String);
+
 function IsSymbol(c: Char) : Boolean;
 function IsSign(c: Char) : Boolean;
 function IsDigit(c: Char) : Boolean;
 function IsIdentifier(key: String) : Boolean;
+function IsCorrectTypeName(const key: String) : Boolean;
 function IsKeyword(pos: LongInt; str: String) : Boolean;
-function GetKeyword(pos: LongInt; str: String) : String;
+function IsNumber(const src: String; var convertedNumber: LongInt) : Boolean;
+function IsModuleName(const src: String) : Boolean;
+function IsDereference(const src: String) : Boolean;
+function IsVariable(const src: String) : Boolean;
+
+function IsOperator(const src: String) : Boolean;
+function IsBinaryOperator(const src: String) : Boolean;
+function IsPrefixOperator(const src: String) : Boolean;
+function IsArrayElementCall(const src: String) : Boolean;
+function IsProcedureCall(const src: String) : Boolean;
+function IsCorrectStatement(const src: String) : Boolean;
+
 function TextStyle(code: Byte) : Char;
 
-function GetFirstIdentifier(srcString: String; pos: LongInt) : String;
-function SectionByConstant(identifier: String) : Byte;
+procedure UpdateCodeVerticalScrollPos(pos: LongInt);
+procedure UpdateCodeVerticalScrollRange(range: LongInt);
