@@ -31,9 +31,9 @@ int main() {
 		switch (currentSection) {
 			case Section::Sign:
 				{
-					if (number[i] == '-' || number[i] == '+') {
+					if (number[i] == '-' || number[i] == '+')
 						sign = (number[i] == '-') ? -1 : 1;
-					} else
+					else
 						i--;
 
 					currentSection = Section::Integer;
@@ -42,14 +42,12 @@ int main() {
 
 			case Section::Integer:
 				{
-					if (number[i] >= '0' && number[i] <= '9') {
+					if (number[i] >= '0' && number[i] <= '9')
 						result = result * 10 + (number[i] - 0x30);
-					} else if (number[i] == '.') {
+					else if (number[i] == '.')
 						currentSection = Section::Fractional;
-					} else if (toupper(number[i]) == 'E') {
+					else if (toupper(number[i]) == 'E')
 						currentSection = Section::Exponential;
-					}
-
 				}
 				break;
 
@@ -58,9 +56,8 @@ int main() {
 					if (number[i] >= '0' && number[i] <= '9') {
 						result += (number[i] - 0x30) * power;
 						power /= 10;
-					} else if (toupper(number[i]) == 'E') {
+					} else if (toupper(number[i]) == 'E')
 						currentSection = Section::Exponential;
-					}
 				}
 				break;
 
@@ -69,9 +66,8 @@ int main() {
 					int exponentialSign = (number[i++] == '-') ? -1 : 1;
 
 					int exponentialPower = 0;			
-					while (i < number.length()) {
+					while (i < number.length())
 						exponentialPower = exponentialPower * 10 + (number[i++] - 0x30);
-					}
 
 					double multiplier = 1;
 					for (int j = 0; j < exponentialPower; j++)
