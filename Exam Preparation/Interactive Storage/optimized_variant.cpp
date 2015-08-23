@@ -173,7 +173,8 @@ Command getCommand() {
 	string command;
 	getline(cin, command);	// getline is the easiest way to grab entire string from input stream
 
-	vector<string> parsedCommands = splitBySubstring(command);
+    // We use tab instead of space in order to make keywords and values, which can contain space character
+	vector<string> parsedCommands = splitBySubstring(command, "\t");
 
 	Command result = Command::Undefined;
 	for (int i = 0; i < commandsCount; i++) {
