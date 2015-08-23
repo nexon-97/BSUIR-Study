@@ -67,6 +67,11 @@ void AssertFileNotFound(string filepath) {
 
 // This function tries to parse all available parameters, and stores them in global variables
 void ParseCommandParameters(vector<string> parameters) {
+	// Clear global variables
+	key.clear();
+	value.clear();
+	filepath.clear();
+	
 	for (size_t i = 1; i < parameters.size(); i++) {
 		if ((parameters[i] == "--key") && ((i + 1) < parameters.size()))
 			key = parameters[++i];
