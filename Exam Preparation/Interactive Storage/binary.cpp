@@ -15,8 +15,6 @@ struct KeyValuePair {
 
 const int commandsCount = 5;
 const char * commandPrefix = "--";
-const Byte keywordLengthSize = 1;
-const Byte valueLengthSize = 2;
 
 string commandNames [commandsCount] = { "add", "remove", "find", "list", "exit" };
 enum Command { Add, Remove, Find, List, Exit, Undefined };
