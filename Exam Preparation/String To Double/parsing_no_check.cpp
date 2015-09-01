@@ -20,8 +20,8 @@ int main() {
 	string number;
 	getline(cin, number);
 
-	double result = 0;
-	double sign = 1;
+	double result = 0.0;
+	double sign = 1.0;
 	double power = 0.1;
 
 	Section currentSection = Section::Sign;
