@@ -4,7 +4,6 @@
 
 using namespace std;
 
-typedef void(*CommandProcessor) (vector<string> & parameters);
 typedef unsigned char Byte;
 typedef unsigned short int Word;
 
@@ -14,19 +13,6 @@ string commandNames[commandsCount] = { "add", "remove", "find", "list" };
 struct KeyValuePair { string key, value; };
 FILE * storageFile;
 string key, value, filepath;
-
-// Command executors declaration
-void AddCommand(vector<string> & parameters);
-void RemoveCommand(vector<string> & parameters);
-void FindCommand(vector<string> & parameters);
-void ListCommand(vector<string> & parameters);
-
-CommandProcessor commandExecutor[commandsCount] = {
-	&AddCommand,
-	&RemoveCommand,
-	&FindCommand,
-	&ListCommand
-};
 
 KeyValuePair GetNextPairFromFile() {
 	KeyValuePair pair;
@@ -80,14 +66,14 @@ void ParseCommandParameters(vector<string> & parameters) {
 	}
 }
 
-void AddCommand(vector<string> & parameters) {
+void AddCommand() {
 	storageFile = fopen(filepath.c_str(), "a+b");
 	if (storageFile != NULL)
 		WritePairToFile(key, value);
 	fclose(storageFile);
 }
 
-void RemoveCommand(vector<string> & parameters) {
+void RemoveCommand() {
 	storageFile = fopen(filepath.c_str(), "rb");
 	if (storageFile != NULL) {
 		vector<KeyValuePair> fileData;
@@ -109,7 +95,7 @@ void RemoveCommand(vector<string> & parameters) {
 	}
 }
 
-void FindCommand(vector<string> & parameters) {
+void FindCommand() {
 	storageFile = fopen(filepath.c_str(), "rb");
 	if (storageFile != NULL) {
 		while (!feof(storageFile)) {
@@ -122,7 +108,7 @@ void FindCommand(vector<string> & parameters) {
 	}
 }
 
-void ListCommand(vector<string> & parameters) {
+void ListCommand() {
 	storageFile = fopen(filepath.c_str(), "rb");
 	if (storageFile != NULL) {
 		while (!feof(storageFile)) {
@@ -140,6 +126,7 @@ void main(int argc, char ** argv) {
 	for (int i = 1; i < argc; i++)
 		parameters.push_back(argv[i]);
 
+	ParseCommandParameters(parameters);
 	int result;
 	for (int i = 0; i < commandsCount; i++) {
 		if (parameters[0] == "--" + commandNames[i]) {
@@ -148,6 +135,10 @@ void main(int argc, char ** argv) {
 		}
 	}
 
-	ParseCommandParameters(parameters);
-	commandExecutor[result](parameters);
+	switch (result) {
+		case 0: AddCommand();
+		case 1: RemoveCommand();
+		case 2: FindCommand();
+		case 3: ListCommand();
+	}
 }
