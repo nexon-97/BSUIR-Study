@@ -81,8 +81,6 @@ void ParseCommandParameters(vector<string> & parameters) {
 }
 
 void AddCommand(vector<string> & parameters) {
-	ParseCommandParameters(parameters);
-
 	storageFile = fopen(filepath.c_str(), "a+b");
 	if (storageFile != NULL)
 		WritePairToFile(key, value);
@@ -90,8 +88,6 @@ void AddCommand(vector<string> & parameters) {
 }
 
 void RemoveCommand(vector<string> & parameters) {
-	ParseCommandParameters(parameters);
-
 	storageFile = fopen(filepath.c_str(), "rb");
 	if (storageFile != NULL) {
 		vector<KeyValuePair> fileData;
@@ -114,8 +110,6 @@ void RemoveCommand(vector<string> & parameters) {
 }
 
 void FindCommand(vector<string> & parameters) {
-	ParseCommandParameters(parameters);
-
 	storageFile = fopen(filepath.c_str(), "rb");
 	if (storageFile != NULL) {
 		while (!feof(storageFile)) {
@@ -129,8 +123,6 @@ void FindCommand(vector<string> & parameters) {
 }
 
 void ListCommand(vector<string> & parameters) {
-	ParseCommandParameters(parameters);
-
 	storageFile = fopen(filepath.c_str(), "rb");
 	if (storageFile != NULL) {
 		while (!feof(storageFile)) {
@@ -144,7 +136,7 @@ void ListCommand(vector<string> & parameters) {
 }
 
 void main(int argc, char ** argv) {
-	std::vector<string> parameters;
+	vector<string> parameters;
 	for (int i = 1; i < argc; i++)
 		parameters.push_back(argv[i]);
 
@@ -156,5 +148,6 @@ void main(int argc, char ** argv) {
 		}
 	}
 
+	ParseCommandParameters(parameters);
 	commandExecutor[result](parameters);
 }
