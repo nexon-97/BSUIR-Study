@@ -8,16 +8,10 @@ typedef void(*CommandProcessor) (vector<string> & parameters);
 typedef unsigned char Byte;
 typedef unsigned short int Word;
 
-struct KeyValuePair {
-	string key, value;
-};
-
 const int commandsCount = 4;
-const char * commandPrefix = "--";
-
 string commandNames[commandsCount] = { "add", "remove", "find", "list" };
-enum Command { Add, Remove, Find, List, Undefined };
 
+struct KeyValuePair { string key, value; };
 FILE * storageFile;
 string key, value, filepath;
 
@@ -149,29 +143,15 @@ void ListCommand(vector<string> & parameters) {
 	}
 }
 
-vector<string> splitBySubstring(string & src, const string & divider = " ") {
-	vector<string> result;
-
-	size_t pos, posOld = 0;
-	do {
-		pos = src.find_first_of(divider, posOld);
-		result.push_back(src.substr(posOld, pos - posOld));
-
-		posOld = pos + divider.length();
-	} while (pos != string::npos);
-
-	return result;
-}
-
 void main(int argc, char ** argv) {
 	std::vector<string> parameters;
 	for (int i = 1; i < argc; i++)
 		parameters.push_back(argv[i]);
 
-	Command result;
+	int result;
 	for (int i = 0; i < commandsCount; i++) {
-		if (parameters[0] == commandPrefix + commandNames[i]) {
-			result = (Command)i;
+		if (parameters[0] == "--" + commandNames[i]) {
+			result = i;
 			break;
 		}
 	}
