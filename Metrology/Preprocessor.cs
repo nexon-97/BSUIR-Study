@@ -83,8 +83,8 @@ namespace Metrics {
 
 		public static Int32 GetLiteralCloserPosition(String Code, Int32 SearchOffset, LiteralType Type) {
 			Regex Expression = (Type == LiteralType.String)
-				? (new Regex("[^\\\\]*\""))
-				: (new Regex("[^\\\\]*'"));
+				? (new Regex("[^\\\\]?\""))
+				: (new Regex("[^\\\\]?'"));
 
 			Match CloserMatch = Expression.Match(Code, SearchOffset);
 			return (CloserMatch.Success) ? (CloserMatch.Index + CloserMatch.Length - 1) : IndexNotFound;
