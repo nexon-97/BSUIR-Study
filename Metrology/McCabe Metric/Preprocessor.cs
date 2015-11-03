@@ -65,7 +65,7 @@ namespace Metrics {
 		}
 
 		public static String PreprocessCode(String Code) {
-			return RemoveCompilerInstructions(RemoveCommentsAndStrings(Code));
+			return NexonStringUtils.HardTrim(RemoveCompilerInstructions(RemoveCommentsAndStrings(Code)));
 		}
 
 		public static CodePartSpecificator CheckCodePartSpecificator(String Code, Int32 Index) {
