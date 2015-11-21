@@ -50,9 +50,9 @@ namespace ChepinMetric
 			Program.SetSource(CodeTextBox.Text);
 
 			StringBuilder OutputText = new StringBuilder();
-			foreach (KeyValuePair<String, CobolProgram.VariableOccurence> Variable in Program.Variables)
+			foreach (String Variable in Program.VariablesOriginal)
 			{
-				OutputText.Append(Variable.Key + "\r\n");
+				OutputText.Append(Variable + "\r\n");
 			}
 
 			CobolProgram.ChepinMetricValue MetricValue = Program.GetChepinMetric();
@@ -63,7 +63,7 @@ namespace ChepinMetric
 				"Паразитные: " + MetricValue.VariableGroups [(Byte) CobolProgram.VariableGroup.Parasit] + "\r\n" + 
 				"Значение метрики: " + MetricValue.FinalValue + "\r\n");
 
-			MetricInfoTextBox.Text = "Список переменных:\r\n" + OutputText.ToString();
+			MetricInfoTextBox.Text = "Список переменных (в верхнем регистре):\r\n" + OutputText.ToString();
 		}
 
 	}

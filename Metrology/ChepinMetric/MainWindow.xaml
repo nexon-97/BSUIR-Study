@@ -23,7 +23,9 @@
             <TextBox Grid.Column="1" Margin="0,10" Name="FilePathTextBox" IsReadOnly="True" VerticalContentAlignment="Center" Padding="5, 0"/>
             <Button Grid.Column="2" Content="Метрика Чепина" HorizontalAlignment="Left" Margin="10" Padding="15, 5" Click="OnCheckMetric"/>
         </Grid> 
-        <TextBox Grid.Row="1" Grid.Column="0" Name="CodeTextBox" FontFamily="Courier New" Margin="10" Background="#FF2B2B2B" BorderBrush="Black" Foreground="#FFFFE800" SelectionBrush="#FF0057BF"/>
+        <TextBox Grid.Row="1" Grid.Column="0" Name="CodeTextBox" FontFamily="Courier New" Margin="10"
+                 Background="#FF2B2B2B" BorderBrush="Black" Foreground="#FFFFE800" SelectionBrush="#FF0057BF"
+                 AcceptsReturn="True" AcceptsTab="True"/>
         <TextBox Grid.Row="1" Grid.Column="1" Name="MetricInfoTextBox" Width="500" FontFamily="Courier New" Margin="10"/>
     </Grid>
 </Window>

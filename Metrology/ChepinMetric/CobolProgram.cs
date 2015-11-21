@@ -48,6 +48,12 @@ namespace ChepinMetric
 			}
 		}
 
+		struct ConditionalPair
+		{
+			public Int32 Begin;
+			public Int32 End;
+		}
+
 		public enum VariableClass
 		{
 			DataVariable,
@@ -67,6 +73,7 @@ namespace ChepinMetric
 
 		private List<String> Lines;
 		public Dictionary<String, VariableOccurence> Variables = new Dictionary<String, VariableOccurence>();
+		public List<String> VariablesOriginal = new List<String>();
 
 		public enum VariableGroup
 		{
@@ -95,9 +102,10 @@ namespace ChepinMetric
 			"SOURCEFORMAT", "ENVIRONMENT", "DIVISION", "INPUT-OUTPUT", "FILE-CONTROL", "DATA", "PROCEDURE",
 			"SORT", "ON", "GIVING", "WRITE", "ASCENDING", "FROM", "AFTER", "LINES", "SPACES", "VARYING",
 			"SEARCH", "WHEN", "END-SEARCH", "RELEASE", "COMPUTE", "ROUNDED", "EVALUATE", "ADD", "END-EVALUATE",
-			"RETURN", "END-RETURN"
+			"RETURN", "END-RETURN", "EQUALS"
 		};
 
+		// File descriptors and table headers
 		List<String> IgnoredLinePrefixes = new List<String>
 		{
 			"FD", "RD", "01"
@@ -153,7 +161,7 @@ namespace ChepinMetric
 
 			ParseVariablesList();
 
-			for (Int32 Index = 0; Index <  Lines.Count; Index++)
+			for (Int32 Index = 0; Index < Lines.Count; Index++)
 			{
 				Lines [Index] = Lines [Index].ToUpper();
 			}
@@ -284,9 +292,9 @@ namespace ChepinMetric
 
 				foreach (String Part in LineParts)
 				{
-					if (Part.Length > 0 && IsValidIdentifier(Part))
+					if (Part.Length > 0 && IsValidIdentifier(Part.ToUpper()))
 					{
-						String FilterePart = Part;
+						//String FilteredPart = Part;
 
 						AddVariable(Part);
 					}
@@ -429,11 +437,67 @@ namespace ChepinMetric
 
 		Int32 GetControlFlowVariablesCount()
 		{
-			Int32 Result = 0;
+			List<String> ProgramDivision = GetProgramDivision();
+			String SourceText = StringListToString(ProgramDivision);
+			List<String> ControlVariables = new List<String>();
 
+			Int32 SearchStart = 0;
+			Int32 Position = IndexNotFound;
+			Regex StartExpression = new Regex(@"\s+IF\s*");
+			Regex EndExpression = new Regex(@"\s+THEN\s*");
 
+			do
+			{
+				Match StartMatch = StartExpression.Match(SourceText, SearchStart);
+				if (StartMatch.Success)
+				{
+					Position = StartMatch.Index;
 
-			return Result;
+					Match EndMatch = EndExpression.Match(SourceText, SearchStart);
+					if (EndMatch.Success)
+					{
+						List<String> ConditionBody = SplitLineIntoWords(
+							SourceText.Substring(Position, EndMatch.Index - Position)
+						);
+
+						foreach (String Part in ConditionBody)
+						{
+							if (Variables.ContainsKey(Part) && !ControlVariables.Contains(Part))
+							{
+								ControlVariables.Add(Part);
+							}
+						}
+					}
+
+					SearchStart = EndMatch.Index + EndMatch.Length;
+				}
+				else
+				{
+					Position = IndexNotFound;
+				}
+			} while(Position != IndexNotFound);
+
+			// Get loop variables
+			Regex LoopConditionExpression = new Regex(@"\s+UNTIL\s*");
+			foreach (String SourceLine in ProgramDivision)
+			{
+				Match LoopMatch = LoopConditionExpression.Match(SourceLine);
+				if (LoopMatch.Success)
+				{
+					String ParameterPart = SourceLine.Substring(LoopMatch.Index + LoopMatch.Length);
+
+					List<String> Parameters = SplitLineIntoWords(ParameterPart);
+					foreach (String Parameter in Parameters)
+					{
+						if (Variables.ContainsKey(Parameter) && !ControlVariables.Contains(Parameter))
+						{
+							ControlVariables.Add(Parameter);
+						}
+					}
+				}
+			}
+
+			return ControlVariables.Count;
 		}
 
 		public static String StringListToString(List<String> ListToConvert)
@@ -450,16 +514,17 @@ namespace ChepinMetric
 
 		void AddVariable(String Variable)
 		{
-			if (Variables.ContainsKey(Variable))
+			if (Variables.ContainsKey(Variable.ToUpper()))
 			{
-				VariableOccurence Occurence = Variables [Variable];
+				VariableOccurence Occurence = Variables [Variable.ToUpper()];
 				Occurence.Count++;
-				Variables [Variable] = Occurence;
+				Variables [Variable.ToUpper()] = Occurence;
 			}
 			else
 			{
-				VariableOccurence Occurence = new VariableOccurence(Variable, VariableClass.DataVariable, 1);
-				Variables.Add(Variable, Occurence);
+				VariableOccurence Occurence = new VariableOccurence(Variable.ToUpper(), VariableClass.DataVariable, 1);
+				Variables.Add(Occurence.VariableName, Occurence);
+				VariablesOriginal.Add(Variable);
 			}
 		}
 
@@ -471,9 +536,9 @@ namespace ChepinMetric
 			List<String> Result = new List<String>();
 			foreach (String Part in Parts)
 			{
-				if (Part.Length > 0)
+				if (Part.Trim().Length > 0)
 				{
-					Result.Add(Part);
+					Result.Add(Part.Trim());
 				}
 			}
 
