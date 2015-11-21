@@ -1,0 +1,29 @@
+﻿<Window x:Class="ChepinMetric.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="COBOL - Метрика Чепина" Height="768" Width="1366"
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        FontFamily="Tahoma" FontSize="16" Icon="graph_7353.png">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Загрузить файл" HorizontalAlignment="Left" Margin="10" Padding="15, 5" Click="OnOpenSourceCode"/>
+            <TextBox Grid.Column="1" Margin="0,10" Name="FilePathTextBox" IsReadOnly="True" VerticalContentAlignment="Center" Padding="5, 0"/>
+            <Button Grid.Column="2" Content="Метрика Чепина" HorizontalAlignment="Left" Margin="10" Padding="15, 5" Click="OnCheckMetric"/>
+        </Grid> 
+        <TextBox Grid.Row="1" Grid.Column="0" Name="CodeTextBox" FontFamily="Courier New" Margin="10" Background="#FF2B2B2B" BorderBrush="Black" Foreground="#FFFFE800" SelectionBrush="#FF0057BF"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Name="MetricInfoTextBox" Width="500" FontFamily="Courier New" Margin="10"/>
+    </Grid>
+</Window>
