@@ -1,0 +1,131 @@
+body, table, tr, td, div, span, p, ul, ol, li
+{
+	padding: 0px;
+	margin: 0px;
+}
+
+table
+{
+	border-collapse: collapse;
+}
+
+body
+{
+	font-family: Roboto, Tahoma, Verdata, sans
+}
+
+.header
+{
+	width: 100%;
+}
+
+.headerWrapper
+{
+	padding-top: 40px;
+	padding-bottom: 40px;
+}
+
+#nameBlock
+{
+	text-transform: uppercase;
+	font-weight: bold;
+	text-align: center;
+	width: 300px;
+}
+
+#searchPanel
+{
+	width: 400px;
+}
+
+#searchBox
+{
+	width: 100%;
+	height: 32px;
+	font-size: 16px;
+	padding: 0px 10px;
+}
+
+.horizontalMenuBody
+{
+	height: 50px;
+	background-color: #333;
+	text-align: center;
+}
+
+.horizontalMenuListWrapper
+{
+	height: 100%;
+}
+
+.horizontalMenuList 
+{
+	height: 100%;
+}
+
+.horizontalMenuList li 
+{
+	display: inline-block;
+	line-height: 50px;
+	vertical-align: middle;
+	height: 50px;
+	padding: 0px 20px;
+	color: white;
+}
+
+.horizontalMenuList li:hover
+{
+	background-color: #0094FF;
+}
+
+.centered
+{
+	width: 1080px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#pinnedPostWrapper
+{
+	padding: 30px 0px;
+}
+
+#pinnedPostText
+{
+	width: 660px;
+	text-align: center;
+}
+
+#pinnedPostImage
+{
+	width: 400px;
+}
+
+#pinnedPostSeparator
+{
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+#pinnedPostTitle
+{
+	text-transform: uppercase;
+}
+
+#footer
+{
+	background-color: #333;
+	padding: 20px;
+}
+
+#latestPostsListing
+{
+	text-align: center;
+}
+
+.latestPost
+{
+	display: inline-block;
+	width: 250px;
+	margin: 5px;
+}
