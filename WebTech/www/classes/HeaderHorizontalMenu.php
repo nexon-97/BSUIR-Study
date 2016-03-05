@@ -17,12 +17,12 @@
 		public function LoadMenuItems()
 		{
 			$this->menuItems = array();
-			$this->menuItems[] = new HeaderHorizontalMenuItem('Blog');
+			$this->menuItems[] = new HeaderHorizontalMenuItem('Blog', 'blog.php');
 			$this->menuItems[] = new HeaderHorizontalMenuItem('Projects');
 			$this->menuItems[] = new HeaderHorizontalMenuItem('Tutorials');
 			$this->menuItems[] = new HeaderHorizontalMenuItem('Guides');
 			$this->menuItems[] = new HeaderHorizontalMenuItem('Games');
-			$this->menuItems[] = new HeaderHorizontalMenuItem('Contact Me');
+			$this->menuItems[] = new HeaderHorizontalMenuItem('Contact Me', 'contact.php');
 		}
 		
 		private function GetMenuItemsList()

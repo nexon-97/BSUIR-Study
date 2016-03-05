@@ -1,5 +1,5 @@
-<div class="horizontalMenuBody">
-<div class="centered horizontalMenuListWrapper">
+<div class="horizontalMenuBody" align="center">
+<div class="horizontalMenuListWrapper">
 <ul class="horizontalMenuList">
 $MENU_ITEMS$
 </ul>

@@ -5,6 +5,7 @@
 	require_once('HeaderHorizontalMenu.php');
 	require_once('IndexPageContent.php');
 	require_once('BlogPageContent.php');
+	require_once('ContactPageContent.php');
 
 	class DocumentBody extends Template
 	{
@@ -31,6 +32,9 @@
 			{
 				case 'blog':
 					$this->content = new BlogPageContent();
+					break;
+				case 'contact':
+					$this->content = new ContactPageContent();
 					break;
 				case 'index':
 				default:

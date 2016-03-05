@@ -2,12 +2,7 @@
 #include "GraphicsEditor.h"
 
 #include "ShapeCollection.h"
-#include "Line.h"
-#include "Circle.h"
-#include "Ellipse.h"
-#include "Square.h"
-#include "Triangle.h"
-
+#include "ShapesList.h"
 #include "Toolbar.h"
 #include "FactoriesList.h"
 
@@ -184,7 +179,6 @@ VOID InitShapeList()
 
 VOID DrawWindow(HDC& hdc)
 {
-	// Draw shapes
 	if (ShapesList)
 	{
 		for (UINT i = 0; i < ShapesList->Size(); i++)
