@@ -1,7 +1,6 @@
-#include "glwidget.h"
-#include "editorapplication.h"
-#include "colorpicker.h"
-
+#include <glwidget.h>
+#include <editorapplication.h>
+#include <colorpicker.h>
 #include <QPainter>
 #include <QMouseEvent>
 
@@ -11,11 +10,11 @@ GLWidget::GLWidget(QWidget *parent)
     setAutoFillBackground(true);
     setMouseTracking(true);
 
-    currentLineIndex = -1;
-    currentActionIndex = -1;
     currentPen = QPen();
     currentPen.setCapStyle(Qt::RoundCap);
     currentPen.setWidth(5);
+
+    currentAction = NULL;
 }
 
 void GLWidget::animate()
@@ -23,7 +22,7 @@ void GLWidget::animate()
     update();
 }
 
-void GLWidget::paintEvent(QPaintEvent *event)
+void GLWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter;
     painter.begin(this);
@@ -35,9 +34,10 @@ void GLWidget::paintEvent(QPaintEvent *event)
     currentPen.setColor(colorPickerRef->getColor());
     painter.setPen(currentPen);
 
-    for (quint32 i = 0; i < history.size(); i++)
+    qint32 actionsCount = history.getActionsCount();
+    for (int i = 0; i < actionsCount; i++)
     {
-        drawAction(painter, history[i]);
+        drawAction(painter, history.getAction(i));
     }
 
     painter.restore();
@@ -50,12 +50,18 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     {
         previousPoint = QPoint(event->x(), event->y());
 
-        // Create new draw action
-        DrawAction newAction;
-        newAction.pen = currentPen;
-        newAction.startIndex = newAction.endIndex = currentLineIndex + 1;
-        history.push_back(newAction);
-        currentActionIndex++;
+        addNewDrawAction();
+    }
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() & Qt::LeftButton)
+    {
+        if (currentAction)
+        {
+            currentAction->finish();
+        }
     }
 }
 
@@ -63,49 +69,68 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() & Qt::LeftButton)
     {
+        if (currentAction || currentAction->finished)
+        {
+            mousePressEvent(event);
+        }
+
         QPoint newPoint(event->x(), event->y());
         lines.push_back(QLine(previousPoint, newPoint));
-        currentLineIndex++;
-        history[currentActionIndex].endIndex = currentLineIndex;
+        currentAction->length++;
         previousPoint = newPoint;
 
         update();
+
+        emit lineDrawn();
+    }
+    else if (currentAction)
+    {
+        currentAction->finish();
     }
 }
 
-void GLWidget::drawAction(QPainter &painter, DrawAction &action)
+void GLWidget::drawAction(QPainter &painter, DrawAction *action)
 {
-    painter.setPen(action.pen);
-    for (quint32 i = action.startIndex; i <= action.endIndex; i++)
+    if (action->startIndex < lines.size())
     {
-        painter.drawLine(lines[i]);
+        painter.setPen(action->pen);
+        QLine *currentLine = &lines[action->startIndex];
+        for (int i = 0; i < action->length; i++)
+        {
+            painter.drawLine(*currentLine);
+            currentLine++;
+        }
     }
+}
+
+void GLWidget::addNewDrawAction()
+{
+    DrawAction *action = new DrawAction(currentPen, lines.size());
+    currentAction = action;
+    history.addAction(action);
 }
 
 void GLWidget::clearCanvas()
 {
     history.clear();
-    lines.clear();
-
-    currentLineIndex = -1;
-    currentActionIndex = -1;
-
     update();
 }
 
-void GLWidget::undoAction()
+qint32 GLWidget::undoAction()
 {
-    if (!history.empty())
-    {
-        history.pop_back();
-        currentActionIndex--;
+    history.undo();
+    update();
+    return history.getActionsCount();
+}
 
-        if (currentActionIndex >= 0)
-        {
-            currentLineIndex = history[currentActionIndex].endIndex;
-            lines.resize(currentLineIndex + 1);
-        }
+bool GLWidget::redoAction()
+{
+    history.redo();
+    update();
+    return history.canRedo();
+}
 
-        update();
-    }
+bool GLWidget::canRedo()
+{
+    return history.canRedo();
 }

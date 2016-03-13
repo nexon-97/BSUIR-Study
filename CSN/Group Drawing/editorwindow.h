@@ -2,11 +2,13 @@
 #define EDITORWINDOW_H
 
 #include <QMainWindow>
-#include "glwidget.h"
-#include "gesture.h"
+#include <glwidget.h>
+#include <gesture.h>
 #include <QTcpSocket>
-#include "colorpicker.h"
-#include "colorpickerwindow.h"
+#include <colorpicker.h>
+#include <colorpickerwindow.h>
+#include <connectionwindow.h>
+#include <brushsettingswindow.h>
 
 class EditorWindow : public QMainWindow
 {
@@ -24,21 +26,38 @@ private:
     void initWindowMenu();
 
     void createColorPaletteWindow();
+    void createConnectionStatusWindow();
+    void createBrushSettingsWindow();
 
 public Q_SLOTS:
     void exitClicked();
     void undoClicked();
+    void redoClicked();
     void clearClicked();
     void paletteMenuActionClicked();
+    void connectionStatusActionClicked();
+    void onLineDrawn();
+    void onConnectButtonClicked();
+    void onStartServerButtonClicked();
+
+    void receivedDataFromServer();
+
+protected:
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
 private:
     QMenuBar *menuBar;
     GLWidget *editorArea;
     QTcpSocket *serverSocket;
-    ColorPicker *colorPicker;
 
     ColorPickerWindow *colorPickerWindow;
+    ConnectionWindow *connectionWindow;
+    BrushSettingsWindow *brushSettingsWnd;
     QAction *colorPaletteAction;
+    QAction *connectionStatusAction;
+    QAction *brushSettingsAction;
+    QAction *undoAction;
+    QAction *redoAction;
 };
 
 #endif

@@ -1,4 +1,4 @@
-#include "coloredrect.h"
+#include <coloredrect.h>
 #include <QPainter>
 
 ColoredRect::ColoredRect(QColor &color, QWidget *parent)
@@ -18,14 +18,14 @@ QColor ColoredRect::getColor()
     return color;
 }
 
-void ColoredRect::paintEvent(QPaintEvent *event)
+void ColoredRect::paintEvent(QPaintEvent*)
 {
     QPainter painter;
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
     QPen borderPen(QColor(0, 0, 0));
-    borderPen.setWidth(3);
+    borderPen.setWidth(2);
     QBrush currentBrush(color);
     painter.setPen(borderPen);
     painter.setBrush(currentBrush);

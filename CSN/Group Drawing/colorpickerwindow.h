@@ -1,19 +1,20 @@
 #ifndef COLORPICKERWINDOW_H
 #define COLORPICKERWINDOW_H
 
-#include <QMainWindow>
+#include <componentwindow.h>
+#include <colorpicker.h>
 
-class ColorPickerWindow : public QMainWindow
+class ColorPickerWindow : public ComponentWindow
 {
     Q_OBJECT
 
 public:
     ColorPickerWindow(QAction *attachedAction, QWidget *parent = NULL);
 
-protected:
-    void closeEvent(QCloseEvent* event);
+    ColorPicker* getPicker();
 
-    QAction *menuAction;
+private:
+    ColorPicker *pickerWidget;
 };
 
 #endif

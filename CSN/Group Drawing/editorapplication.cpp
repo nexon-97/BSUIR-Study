@@ -1,4 +1,4 @@
-#include "editorapplication.h"
+#include <editorapplication.h>
 
 EditorApplication* EditorApplication::currentApp = NULL;
 

@@ -2,8 +2,8 @@
 #define EDITORAPPLICATION_H
 
 #include <QApplication>
-#include "editorcore.h"
-#include "editorwindow.h"
+#include <editorcore.h>
+#include <editorwindow.h>
 
 class EditorApplication : public QApplication
 {

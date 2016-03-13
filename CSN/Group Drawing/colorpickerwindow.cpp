@@ -1,16 +1,15 @@
-#include "colorpickerwindow.h"
-#include <QCloseEvent>
-#include <QAction>
+#include <colorpickerwindow.h>
 
 ColorPickerWindow::ColorPickerWindow(QAction *attachedAction, QWidget *parent)
-    : QMainWindow(parent, Qt::Tool), menuAction(attachedAction)
+    : ComponentWindow(attachedAction, parent)
 {
     setWindowTitle("Color Palette");
+
+    pickerWidget = new ColorPicker(this);
+    setCentralWidget(pickerWidget);
 }
 
-void ColorPickerWindow::closeEvent(QCloseEvent* event)
+ColorPicker* ColorPickerWindow::getPicker()
 {
-    event->ignore();
-    menuAction->setChecked(false);
-    hide();
+    return pickerWidget;
 }

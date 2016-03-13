@@ -5,7 +5,7 @@
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QColor>
-#include "coloredrect.h"
+#include <coloredrect.h>
 
 class ColorPicker : public QWidget
 {

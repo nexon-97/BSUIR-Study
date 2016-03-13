@@ -2,8 +2,7 @@
 #define GLWIDGET_H
 
 #include <QOpenGLWidget>
-#include "gesture.h"
-#include <QVector>
+#include <historymanager.h>
 
 class GLWidget : public QOpenGLWidget
 {
@@ -14,9 +13,15 @@ public:
 
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
     void clearCanvas();
-    void undoAction();
+    qint32 undoAction();
+    bool redoAction();
+    bool canRedo();
+
+signals:
+    void lineDrawn();
 
 public slots:
     void animate();
@@ -24,14 +29,14 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
-    void drawAction(QPainter &painter, DrawAction &action);
+    void addNewDrawAction();
+    void drawAction(QPainter &painter, DrawAction *action);
 
     QPoint previousPoint;
 
     QVector<QLine> lines;
-    QVector<DrawAction> history;
-    qint32 currentLineIndex;
-    qint32 currentActionIndex;
+    HistoryManager history;
+    DrawAction *currentAction;
     QPen currentPen;
 };
 

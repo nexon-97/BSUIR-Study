@@ -1,4 +1,4 @@
-#include "colorpicker.h"
+#include <colorpicker.h>
 #include <QPainter>
 #include <QIntValidator>
 #include <QLabel>

@@ -10,6 +10,12 @@ class EditorCore : public QObject
 
 public:
     EditorCore();
+    ~EditorCore();
+
+    static void LogInfo(QString msg);
+
+private:
+    static FILE *logFile;
 };
 
 #endif

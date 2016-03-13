@@ -1,5 +1,5 @@
-#include "editorwindow.h"
-#include "editorapplication.h"
+#include <editorwindow.h>
+#include <editorapplication.h>
 #include <QSurfaceFormat>
 
 int main(int argc, char *argv[])
