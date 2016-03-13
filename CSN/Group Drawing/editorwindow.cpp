@@ -55,7 +55,6 @@ void EditorWindow::createConnectionStatusWindow()
 void EditorWindow::createBrushSettingsWindow()
 {
     brushSettingsWnd = new BrushSettingsWindow(brushSettingsAction, this);
-    brushSettingsWnd->resize(250, 200);
     brushSettingsWnd->show();
 
     QRect windowRect = frameGeometry();
@@ -85,8 +84,10 @@ void EditorWindow::initEditMenu()
     QMenu *editMenu = new QMenu(tr("Edit"), menuBar);
     undoAction = editMenu->addAction(tr("Undo"));
     undoAction->setEnabled(false);
+    undoAction->setShortcut(QKeySequence("Ctrl+Z"));
     redoAction = editMenu->addAction(tr("Redo"));
     redoAction->setEnabled(false);
+    redoAction->setShortcut(QKeySequence("Ctrl+Shift+Z"));
     editMenu->addSeparator();
     QAction *clearAction = editMenu->addAction(tr("Clear"));
     menuBar->addMenu(editMenu);
@@ -112,6 +113,7 @@ void EditorWindow::initWindowMenu()
 
     connect(colorPaletteAction, SIGNAL(triggered()), this, SLOT(paletteMenuActionClicked()));
     connect(connectionStatusAction, SIGNAL(triggered()), this, SLOT(connectionStatusActionClicked()));
+    connect(brushSettingsAction, SIGNAL(triggered()), this, SLOT(brushSettingsActionClicked()));
 }
 
 void EditorWindow::exitClicked()
@@ -173,6 +175,18 @@ void EditorWindow::connectionStatusActionClicked()
     }
 }
 
+void EditorWindow::brushSettingsActionClicked()
+{
+    if (brushSettingsAction->isChecked())
+    {
+        brushSettingsWnd->show();
+    }
+    else
+    {
+        brushSettingsWnd->hide();
+    }
+}
+
 void EditorWindow::onLineDrawn()
 {
     undoAction->setEnabled(true);
@@ -196,6 +210,11 @@ void EditorWindow::receivedDataFromServer()
 ColorPicker* EditorWindow::getColorPickerWindow()
 {
     return colorPickerWindow->getPicker();
+}
+
+BrushSettingsWindow* EditorWindow::getBrushSettingsWindow()
+{
+    return brushSettingsWnd;
 }
 
 void EditorWindow::resizeEvent(QResizeEvent *event)

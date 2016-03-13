@@ -18,6 +18,7 @@ public:
     EditorWindow(QWidget *parent = NULL, Qt::WindowFlags flags = NULL);
 
     ColorPicker* getColorPickerWindow();
+    BrushSettingsWindow* getBrushSettingsWindow();
 
 private:
     void initializeWindow();
@@ -36,6 +37,7 @@ public Q_SLOTS:
     void clearClicked();
     void paletteMenuActionClicked();
     void connectionStatusActionClicked();
+    void brushSettingsActionClicked();
     void onLineDrawn();
     void onConnectButtonClicked();
     void onStartServerButtonClicked();

@@ -18,6 +18,7 @@ public:
     void setMainWindow(EditorWindow* window);
     EditorWindow* getMainWindow();
     ColorPicker* getColorPickerWindow();
+    BrushSettingsWindow* getBrushSettingsWindow();
 
 private:
     static EditorApplication *currentApp;
