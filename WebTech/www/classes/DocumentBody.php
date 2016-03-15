@@ -7,6 +7,7 @@
 	require_once('BlogPageContent.php');
 	require_once('ContactPageContent.php');
 	require_once('UserInfoPageContent.php');
+	require_once('FullPostViewContent.php');
 
 	class DocumentBody extends Template
 	{
@@ -39,6 +40,9 @@
 					break;
 				case 'user':
 					$this->content = new UserInfoPageContent();
+					break;
+				case 'post':
+					$this->content = new FullPostViewContent();
 					break;
 				case 'index':
 				default:

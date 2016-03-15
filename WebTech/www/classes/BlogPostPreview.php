@@ -8,9 +8,10 @@
 		public $displayStyle;
 		public $imagePath;
 		public $postHRef;
+		public $authorLink;
 		
 		public function __construct(
-			$title, $date, $shortDescription = '', $imagePath = 'img/noimage.jpg', $author = '', $href = '#')
+			$title, $date, $shortDescription = '', $imagePath = 'img/noimage.jpg', $author = '', $href = '#', $authorLink = '#')
 		{
 			parent::__construct('blog_post_preview');
 			
@@ -21,6 +22,7 @@
 			$this->postDate = $date;
 			$this->postAuthor = $author;
 			$this->postHRef = $href;
+			$this->authorLink = $authorLink;
 		}
 		
 		protected function HandleKeywords()
@@ -31,6 +33,7 @@
 			$this->ReplaceKeywordByText('AUTHOR', $this->postAuthor);
 			$this->ReplaceKeywordByText('SHORT_DESCRIPTION', $this->postShortDescription);
 			$this->ReplaceKeywordByText('POST_HREF', $this->postHRef);
+			$this->ReplaceKeywordByText('AUTHOR_LINK', $this->authorLink);
 		}
 	}
 

@@ -18,21 +18,32 @@
 		
 		private function loadUserInfo()
 		{
-			$userId = $_GET['id'];
+			$success = false;
+			
+			$userId = isset($_GET['id']) ? $_GET['id'] : '0';
 			if (ctype_digit($userId))
 			{
 				$databaseConnection = new Database('nexonlab');
 				$result = $databaseConnection->SelectConditional('user_profiles', 'nickname, email, avatar, name, surname', 'id = ' . $userId);
+				$socialInfo = $databaseConnection->SelectConditional('user_social_links', 'phone, vk, twitter, linkedin', 'user_id = ' . $userId);
+				
 				if (count($result) > 0)
 				{	
 					$info = $result[0];
 					$this->contentPage = new UserProfilePage($info['nickname'], '0', $info['avatar'], $info['name'], $info['surname'], $info['email']);	
 					
-					return true;
+					$success = true;
+				}
+				
+				if (count($socialInfo) > 0)
+				{
+					$socialInfo = $socialInfo[0];
+					
+					$this->contentPage->setSocialInfo($socialInfo['phone'], $socialInfo['vk'], $socialInfo['twitter'], $socialInfo['linkedin']);
 				}
 			}
 			
-			return false;
+			return $success;
 		}
 		
 		private function loadUserErrorPage()

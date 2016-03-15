@@ -8,7 +8,7 @@
 <a href="$POST_HREF$">$TITLE$</a>
 </h3>
 <div style="font-size: 14px;">
-Posted on <a href="#"><strong>$DATE$</strong></a> by <a href="#"><strong>$AUTHOR$</strong></a>
+Posted on <a href="#"><strong>$DATE$</strong></a> by <a href="$AUTHOR_LINK$"><strong>$AUTHOR$</strong></a>
 </div>
 <div style="padding-top: 10px;">
 $SHORT_DESCRIPTION$

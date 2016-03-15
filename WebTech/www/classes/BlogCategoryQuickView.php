@@ -32,9 +32,11 @@
 			$this->articleHeaders = array();
 			foreach ($articles as $item)
 			{
-				$authorNick = $databaseConnection->SelectConditional('user_profiles', 'nickname', 'id = ' . $item['author']);
+				$authorDesc = $databaseConnection->SelectConditional('user_profiles', 'id, nickname', 'id = ' . $item['author']);
+				$authorDesc = $authorDesc[0];
 				$this->articleHeaders[] = new BlogPostPreview(
-					$item['title'], $item['creation_date'], $item['description'], $item['image'], $authorNick[0]['nickname']);
+					$item['title'], $item['creation_date'], $item['description'], $item['image'], $authorDesc['nickname'], '#',
+					'user.php?id=' . $authorDesc['id']);
 			}
 		}
 		
