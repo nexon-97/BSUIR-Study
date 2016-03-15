@@ -1,1 +1,1 @@
-<script type="text/javascript" href="$PATH$"></script>
+<script type="text/javascript" src="$PATH$"></script>

@@ -6,6 +6,7 @@
 	require_once('IndexPageContent.php');
 	require_once('BlogPageContent.php');
 	require_once('ContactPageContent.php');
+	require_once('UserInfoPageContent.php');
 
 	class DocumentBody extends Template
 	{
@@ -35,6 +36,9 @@
 					break;
 				case 'contact':
 					$this->content = new ContactPageContent();
+					break;
+				case 'user':
+					$this->content = new UserInfoPageContent();
 					break;
 				case 'index':
 				default:

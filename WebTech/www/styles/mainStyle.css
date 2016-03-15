@@ -46,15 +46,14 @@ body
 
 #searchPanel
 {
-	width: 400px;
+	width: 420px;
 }
 
 #searchBox
 {
-	width: 100%;
+	width: 400px;
 	height: 32px;
 	font-size: 16px;
-	padding: 0px 10px;
 }
 
 .horizontalMenuBody
@@ -124,7 +123,8 @@ body
 #footer
 {
 	background-color: #333;
-	padding: 20px;
+	line-height: 50px;
+	width: 100%;
 }
 
 #latestPostsListing
@@ -169,4 +169,9 @@ body
 .blogCategoryHeader
 {
 	padding-left: 10px;
+}
+
+#msgTextInput
+{
+	font-family: Roboto, Tahoma;
 }

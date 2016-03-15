@@ -43,6 +43,7 @@
 			$this->scripts = array();
 			$this->scripts[] = new ScriptTag('scripts/jquery-1.12.1.min.js');
 			$this->scripts[] = new ScriptTag('scripts/effects.js');
+			$this->scripts[] = new ScriptTag('scripts/footer_controller.js');
 		}
 		
 		private function LoadBody($contentType)
