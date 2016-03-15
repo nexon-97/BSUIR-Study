@@ -29,6 +29,7 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
+    void updatePen();
     void addNewDrawAction();
     void drawAction(QPainter &painter, DrawAction *action);
 

@@ -29,10 +29,10 @@ void GLWidget::paintEvent(QPaintEvent*)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.save();
 
-    EditorApplication *currentApp = EditorApplication::getCurrent();
-    ColorPicker *colorPickerRef = currentApp->getColorPickerWindow();
-    currentPen.setColor(colorPickerRef->getColor());
-    painter.setPen(currentPen);
+    /*EditorApplication *currentApp = EditorApplication::getCurrent();
+    currentPen = currentApp->getBrushSettingsWindow()->getPen();
+    currentPen.setColor(currentApp->getColorPickerWindow()->getColor());
+    painter.setPen(currentPen);*/
 
     qint32 actionsCount = history.getActionsCount();
     for (int i = 0; i < actionsCount; i++)
@@ -50,6 +50,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     {
         previousPoint = QPoint(event->x(), event->y());
 
+        updatePen();
         addNewDrawAction();
     }
 }
@@ -87,6 +88,13 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     {
         currentAction->finish();
     }
+}
+
+void GLWidget::updatePen()
+{
+    EditorApplication *currentApp = EditorApplication::getCurrent();
+    currentPen = currentApp->getBrushSettingsWindow()->getPen();
+    currentPen.setColor(currentApp->getColorPickerWindow()->getColor());
 }
 
 void GLWidget::drawAction(QPainter &painter, DrawAction *action)

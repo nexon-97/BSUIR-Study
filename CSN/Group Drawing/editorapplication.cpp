@@ -32,10 +32,10 @@ EditorWindow* EditorApplication::getMainWindow()
 
 ColorPicker* EditorApplication::getColorPickerWindow()
 {
-    if (window)
-    {
-        return window->getColorPickerWindow();
-    }
+    return (window) ? window->getColorPickerWindow() : NULL;
+}
 
-    return NULL;
+BrushSettingsWindow* EditorApplication::getBrushSettingsWindow()
+{
+    return (window) ? window->getBrushSettingsWindow() : NULL;
 }
