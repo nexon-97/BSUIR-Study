@@ -19,6 +19,9 @@ public:
     qint32 undoAction();
     bool redoAction();
     bool canRedo();
+    bool canUndo();
+
+    void addNetworkDrawAction(DrawAction *action);
 
 signals:
     void lineDrawn();
@@ -32,10 +35,10 @@ protected:
     void updatePen();
     void addNewDrawAction();
     void drawAction(QPainter &painter, DrawAction *action);
+    void finishCurrentAction();
 
     QPoint previousPoint;
 
-    QVector<QLine> lines;
     HistoryManager history;
     DrawAction *currentAction;
     QPen currentPen;

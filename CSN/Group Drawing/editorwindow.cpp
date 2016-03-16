@@ -90,11 +90,15 @@ void EditorWindow::initEditMenu()
     redoAction->setShortcut(QKeySequence("Ctrl+Shift+Z"));
     editMenu->addSeparator();
     QAction *clearAction = editMenu->addAction(tr("Clear"));
+    editMenu->addSeparator();
+    QAction *networkTestAction = editMenu->addAction(tr("Network test"));
+    networkTestAction->setShortcut(QKeySequence("Ctrl+A"));
     menuBar->addMenu(editMenu);
 
     connect(undoAction, SIGNAL(triggered()), this, SLOT(undoClicked()));
     connect(redoAction, SIGNAL(triggered()), this, SLOT(redoClicked()));
     connect(clearAction, SIGNAL(triggered()), this, SLOT(clearClicked()));
+    connect(networkTestAction, SIGNAL(triggered()), this, SLOT(networkTestActionClicked()));
 }
 
 void EditorWindow::initWindowMenu()
@@ -114,6 +118,14 @@ void EditorWindow::initWindowMenu()
     connect(colorPaletteAction, SIGNAL(triggered()), this, SLOT(paletteMenuActionClicked()));
     connect(connectionStatusAction, SIGNAL(triggered()), this, SLOT(connectionStatusActionClicked()));
     connect(brushSettingsAction, SIGNAL(triggered()), this, SLOT(brushSettingsActionClicked()));
+}
+
+void EditorWindow::networkTestActionClicked()
+{
+    QPen actionPen;
+    DrawAction *action = new DrawAction();
+    action->pen = actionPen;
+    editorArea->addNetworkDrawAction(action);
 }
 
 void EditorWindow::exitClicked()
@@ -149,6 +161,8 @@ void EditorWindow::redoClicked()
     {
         redoAction->setEnabled(false);
     }
+
+    undoAction->setEnabled(editorArea->canUndo());
 }
 
 void EditorWindow::paletteMenuActionClicked()
@@ -217,7 +231,7 @@ BrushSettingsWindow* EditorWindow::getBrushSettingsWindow()
     return brushSettingsWnd;
 }
 
-void EditorWindow::resizeEvent(QResizeEvent *event)
+void EditorWindow::applyDrawAction(DrawAction *action)
 {
-
+    editorArea->addNetworkDrawAction(action);
 }

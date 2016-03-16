@@ -2,16 +2,19 @@
 #define GESTURE_H
 
 #include <QPen>
+#include <QVector>
+#include <QLine>
 
 struct DrawAction
 {
+public:
     QPen pen;
-    qint32 startIndex;
-    qint32 length;
     bool finished;
+    qint32 ownerId;
+    QVector<QLine> lines;
 
-    DrawAction(QPen pen, qint32 startIndex)
-        : pen(pen), startIndex(startIndex), length(0), finished(false)
+    DrawAction(QPen pen = QPen())
+        : pen(pen), finished(false), ownerId(0)
     {
 
     }

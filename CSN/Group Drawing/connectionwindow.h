@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 class ConnectionWindow : public ComponentWindow
 {
@@ -13,21 +14,40 @@ class ConnectionWindow : public ComponentWindow
 public:
     ConnectionWindow(QAction *attachedAction, QWidget *parent = NULL);
 
+    void refreshNetworkStatus();
+
 signals:
     void connectButtonClicked();
     void startServerButtonClicked();
 
 public slots:
-    void connectButtonPressed();
+    void startServerPressed();
+    void connectToServerPressed();
+    void shutdownButtonPressed();
+    void onClientConnected();
+    void onClientDisconnected();
+    void disconnectButtonPressed();
 
 private:
     void initLayout();
+    void destroyLayout(QLayout *layout);
 
-    QLabel *connectedStatusLabel;
-    QLabel *ipAddressLabel;
-    QLineEdit *ipAdressInput;
+    void loadValidLayout();
+    void createStandaloneLayout();
+    void createServerLayout();
+    void createClientLayout();
+
+    QWidget *nestedWidget;
+    QGridLayout *currentLayout;
+
+    QLabel *networkStatusLabel;
+    QLabel *clientsCountIndicator;
+    QLabel *serverNetworkAddress;
+    QLabel *clientNetworkAddress;
     QPushButton *connectButton;
     QPushButton *startServerButton;
+    QLineEdit *serverIpEdit;
+    QLineEdit *connectToIpEdit;
 };
 
 #endif

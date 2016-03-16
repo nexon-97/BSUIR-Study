@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <glwidget.h>
 #include <gesture.h>
-#include <QTcpSocket>
 #include <colorpicker.h>
 #include <colorpickerwindow.h>
 #include <connectionwindow.h>
@@ -19,6 +18,8 @@ public:
 
     ColorPicker* getColorPickerWindow();
     BrushSettingsWindow* getBrushSettingsWindow();
+
+    void applyDrawAction(DrawAction *action);
 
 private:
     void initializeWindow();
@@ -42,15 +43,13 @@ public Q_SLOTS:
     void onConnectButtonClicked();
     void onStartServerButtonClicked();
 
-    void receivedDataFromServer();
+    void networkTestActionClicked();
 
-protected:
-    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void receivedDataFromServer();
 
 private:
     QMenuBar *menuBar;
     GLWidget *editorArea;
-    QTcpSocket *serverSocket;
 
     ColorPickerWindow *colorPickerWindow;
     ConnectionWindow *connectionWindow;

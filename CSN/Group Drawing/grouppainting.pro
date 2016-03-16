@@ -13,7 +13,8 @@ HEADERS     =   glwidget.h \
     serversocket.h \
     componentwindow.h \
     brushsettingswindow.h \
-    historymanager.h
+    historymanager.h \
+    clientsocket.h
 SOURCES     =   glwidget.cpp \
                 main.cpp \
                 editorwindow.cpp \
@@ -26,7 +27,8 @@ SOURCES     =   glwidget.cpp \
     serversocket.cpp \
     componentwindow.cpp \
     brushsettingswindow.cpp \
-    historymanager.cpp
+    historymanager.cpp \
+    clientsocket.cpp
 
 # install
 target.path = /home/nexon/Projects/Qt/VectorEditorBuild

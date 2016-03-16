@@ -61,7 +61,7 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
     {
         if (currentAction)
         {
-            currentAction->finish();
+            finishCurrentAction();
         }
     }
 }
@@ -76,8 +76,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         }
 
         QPoint newPoint(event->x(), event->y());
-        lines.push_back(QLine(previousPoint, newPoint));
-        currentAction->length++;
+        currentAction->lines.append(QLine(previousPoint, newPoint));
         previousPoint = newPoint;
 
         update();
@@ -86,8 +85,29 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     }
     else if (currentAction)
     {
-        currentAction->finish();
+        finishCurrentAction();
     }
+}
+
+void GLWidget::finishCurrentAction()
+{
+    currentAction->finish();
+
+    EditorApplication *app = EditorApplication::getCurrent();
+    NetworkMode mode = app->getNetworkMode();
+    if (mode != Standalone)
+    {
+        if (mode == Server)
+        {
+            app->sendDrawActionToAllClients(currentAction);
+        }
+        else
+        {
+
+        }
+    }
+
+    currentAction = NULL;
 }
 
 void GLWidget::updatePen()
@@ -99,23 +119,25 @@ void GLWidget::updatePen()
 
 void GLWidget::drawAction(QPainter &painter, DrawAction *action)
 {
-    if (action->startIndex < lines.size())
+    painter.setPen(action->pen);
+    for (int i = 0; i < action->lines.size(); i++)
     {
-        painter.setPen(action->pen);
-        QLine *currentLine = &lines[action->startIndex];
-        for (int i = 0; i < action->length; i++)
-        {
-            painter.drawLine(*currentLine);
-            currentLine++;
-        }
+        painter.drawLine(action->lines[i]);
     }
 }
 
 void GLWidget::addNewDrawAction()
 {
-    DrawAction *action = new DrawAction(currentPen, lines.size());
+    DrawAction *action = new DrawAction(currentPen);
     currentAction = action;
     history.addAction(action);
+}
+
+void GLWidget::addNetworkDrawAction(DrawAction *action)
+{
+    action->finished = true;
+    history.addAction(action);
+    update();
 }
 
 void GLWidget::clearCanvas()
@@ -141,4 +163,9 @@ bool GLWidget::redoAction()
 bool GLWidget::canRedo()
 {
     return history.canRedo();
+}
+
+bool GLWidget::canUndo()
+{
+    return !history.isEmpty();
 }
