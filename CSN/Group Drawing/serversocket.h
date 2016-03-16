@@ -13,11 +13,15 @@ public:
     ServerSocket(QObject *parent = NULL);
 
     void sendDrawActionToAllClients(DrawAction *action);
+    int connectedClientsCount();
 
 private slots:
     void newConnectionRequested();
     void clientDisconnected();
     void receivedDataFromClient();
+
+signals:
+    void serverClientsCountChanged();
 
 private:
     QByteArray packDrawAction(DrawAction *action);

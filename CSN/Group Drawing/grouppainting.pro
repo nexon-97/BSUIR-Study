@@ -14,7 +14,8 @@ HEADERS     =   glwidget.h \
     componentwindow.h \
     brushsettingswindow.h \
     historymanager.h \
-    clientsocket.h
+    clientsocket.h \
+    iserializable.h
 SOURCES     =   glwidget.cpp \
                 main.cpp \
                 editorwindow.cpp \

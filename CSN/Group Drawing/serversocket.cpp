@@ -12,10 +12,12 @@ void ServerSocket::newConnectionRequested()
     QTcpSocket *clientSocket = nextPendingConnection();
     if (clientSocket)
     {
-        clientSockets.append(clientSocket);
+        clientSockets.push_back(clientSocket);
 
         connect(clientSocket, SIGNAL(readyRead()), this, SLOT(receivedDataFromClient()));
         connect(clientSocket, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
+
+        emit serverClientsCountChanged();
     }
 }
 
@@ -25,6 +27,8 @@ void ServerSocket::clientDisconnected()
     if (disconnectedSocket)
     {
         clientSockets.removeOne(disconnectedSocket);
+
+        emit serverClientsCountChanged();
     }
 }
 
@@ -39,7 +43,7 @@ void ServerSocket::receivedDataFromClient()
 
 void ServerSocket::sendDrawActionToAllClients(DrawAction *action)
 {
-    QByteArray packedAction = packDrawAction(action);
+    QByteArray packedAction = action->serialize(action);
 
     for (int i = 0; i < clientSockets.size(); i++)
     {
@@ -47,20 +51,7 @@ void ServerSocket::sendDrawActionToAllClients(DrawAction *action)
     }
 }
 
-QByteArray ServerSocket::packDrawAction(DrawAction *action)
+int ServerSocket::connectedClientsCount()
 {
-    qint32 length = action->lines.size();
-    QPen *pen = &(action->pen);
-
-    QByteArray data;
-    data.append((const char*) pen, sizeof(QPen));
-    data.append((const char*) &length, sizeof(qint32));
-
-    for (qint32 i = 0; i < length; i++)
-    {
-        QLine *line = &(action->lines[i]);
-        data.append((const char*) line, sizeof(QLine));
-    }
-
-    return data;
+    return clientSockets.size();
 }

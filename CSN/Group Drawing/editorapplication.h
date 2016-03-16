@@ -53,6 +53,7 @@ signals:
     void clientConnectedSignal();
     void clientDisconnectedSignal();
 
+
 private:
     static EditorApplication *currentApp;
 

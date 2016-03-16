@@ -11,13 +11,14 @@ ClientSocket::ClientSocket(QObject *parent)
 
 void ClientSocket::dataReceived()
 {
-    DrawAction *action = unpackDrawAction(readAll());
+    DrawAction *action = new DrawAction();//unpackDrawAction(readAll());
+    action = action->deserialize(readAll());
     EditorApplication::getCurrent()->applyReceivedDrawAction(action);
 }
 
 DrawAction* ClientSocket::unpackDrawAction(QByteArray rawData)
 {
-    DrawAction *action = new DrawAction();
+    /*DrawAction *action = new DrawAction();
 
     qint32 linesCount;
     QPen pen;
@@ -36,7 +37,7 @@ DrawAction* ClientSocket::unpackDrawAction(QByteArray rawData)
         memcpy(&line, dataPtr, sizeof(QLine));
         dataPtr += sizeof(QLine);
         action->lines.append(line);
-    }
+    }*/
 
-    return action;
+    return NULL;
 }

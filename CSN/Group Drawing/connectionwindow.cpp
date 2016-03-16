@@ -187,6 +187,10 @@ void ConnectionWindow::startServerPressed()
     {
         EditorApplication::getCurrent()->changeNetworkMode(Server);
         loadValidLayout();
+
+        connect(
+            EditorApplication::getCurrent()->getServer(),
+            SIGNAL(serverClientsCountChanged()), this, SLOT(onClientsCountChanged()));
     }
 }
 
@@ -225,4 +229,10 @@ void ConnectionWindow::onClientDisconnected()
     loadValidLayout();
 
     QMessageBox::warning(NULL, "Connection Lost", tr("Connection with server was lost"));
+}
+
+void ConnectionWindow::onClientsCountChanged()
+{
+    clientsCountIndicator->setText(
+        QString::number(EditorApplication::getCurrent()->getServer()->connectedClientsCount()));
 }

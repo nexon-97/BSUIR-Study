@@ -27,6 +27,7 @@ public slots:
     void onClientConnected();
     void onClientDisconnected();
     void disconnectButtonPressed();
+    void onClientsCountChanged();
 
 private:
     void initLayout();
