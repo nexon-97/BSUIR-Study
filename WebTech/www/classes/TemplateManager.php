@@ -7,7 +7,7 @@
 		public static $templateFolder = 'templates/';
 		public static $templateExtension = '.tpl';
 		
-		public static function GetDocumentTemplate($templateId)
+		public static function getDocumentTemplate($templateId)
 		{
 			switch ($templateId)
 			{
@@ -19,7 +19,7 @@
 			}
 		}
 		
-		public static function GetFullPath($path)
+		public static function getFullPath($path)
 		{
 			return SiteInfo::$siteDomain.TemplateManager::$templateFolder.$path.TemplateManager::$templateExtension;
 		}

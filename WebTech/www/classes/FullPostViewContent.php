@@ -1,56 +1,54 @@
 <?php
-	require_once('Template.php');
+	require_once('FullPostView.php');
+	require_once('PostNotFoundErrorMessage.php');
 
 	class FullPostViewContent extends Template
 	{
 		private $postText;
 		private $postStats;
 		private $postTitle;
-		private $postCategory;
+		
+		private $contentBlock;
 		
 		public function __construct()
 		{
-			parent::__construct('full_post_view_content');
+			parent::__construct('general_content_block');
 			
-			if ($this->loadPostText())
+			if (!$this->loadPostText())
 			{
-				
+				$this->contentBlock = new PostNotFoundErrorMessage();
 			}
 		}
 		
 		private function loadPostText()
 		{
-			$success = false;
 			$postId = isset($_GET['id']) ? $_GET['id'] : '0';
 			if (ctype_digit($postId))
 			{
 				$databaseConnection = new Database('nexonlab');
-				$postInfo = $databaseConnection->SelectConditional('blog_entries', 'category, title, full_text, creation_date, author', 'id = ' . $postId);
+				$postInfo = $databaseConnection->SelectConditional('blog_entries', 'id, category, creation_date, author', 'id = ' . $postId);
 				if (count($postInfo) > 0)
 				{
 					$postInfo = $postInfo[0];
 					
-					$this->postTitle = $postInfo['title'];
-					$this->postText = $postInfo['full_text'];
-					$this->postStats = $postInfo['creation_date'] . ' by ' . $postInfo['author'];
-					
 					$categoryTitle = $databaseConnection->SelectConditional('blogcategories', 'name', 'id = ' . $postInfo['category']);					
-					$this->postCategory = $categoryTitle[0]['name'] . ' > ' . $this->postTitle;
+					$categoryTitle = $categoryTitle[0]['name'];
+					
+					$authorInfo = $databaseConnection->SelectConditional('user_profiles', 'id, nickname', 'id = ' . $postInfo['author']);					
+					$authorInfo = $authorInfo[0];
 
-					$success = true;
+					$this->contentBlock = new FullPostView($categoryTitle,
+						$postInfo['id'], $postInfo['creation_date'], $authorInfo['id'], $authorInfo['nickname']);
+					return true;
 				}
 			}
 			
-			return $success;
+			return false;
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('POST_HIERARCHY', $this->postCategory);
-			$this->ReplaceKeywordByText('POST_STATS', $this->postStats);
-			$this->ReplaceKeywordByText('POST_TEXT', $this->postText);
-			$this->ReplaceKeywordByText('POST_COMMENTS', '<h3>Comments</h3>');
-			$this->ReplaceKeywordByText('POST_TITLE', $this->postTitle);
+			$this->replaceKeywordByText('CONTENT', $this->contentBlock->getText());
 		}
 	}
 

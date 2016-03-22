@@ -13,10 +13,10 @@
 			$this->value = $value;
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('KEY', $this->property);
-			$this->ReplaceKeywordByText('VALUE', $this->value);
+			$this->replaceKeywordByText('KEY', $this->property);
+			$this->replaceKeywordByText('VALUE', $this->value);
 		}
 	}
 

@@ -11,51 +11,51 @@
 		
 		public function __construct($path)
 		{
-			$this->path = TemplateManager::GetFullPath($path);
+			$this->path = TemplateManager::getFullPath($path);
 		}
 		
-		public function LoadFromFile()
+		public function loadFromFile()
 		{			
 			$this->templateText = file_get_contents($this->path);
 			$this->plainText = $this->templateText;
 		}
 		
-		public function GetTemplateText()
+		public function getTemplateText()
 		{
 			return $this->templateText;
 		}
 		
-		public function GetText()
+		public function getText()
 		{
-			$this->Rebuild();
+			$this->rebuild();
 			return $this->plainText;
 		}
 		
-		public function Rebuild()
+		public function rebuild()
 		{
-			$this->LoadFromFile($this->path);
-			$this->HandleKeywords();
+			$this->loadFromFile($this->path);
+			$this->handleKeywords();
 		}
 		
-		public function ReplaceKeywordByText($key, $text)
+		public function replaceKeywordByText($key, $text)
 		{
 			$this->plainText = str_replace('$'.$key.'$', $text, $this->plainText);
 		}
 		
-		public function ReplaceKeywordByStaticContent($key, $contentPath)
+		public function replaceKeywordByStaticContent($key, $contentPath)
 		{
 			$this->plainText = str_replace('$'.$key.'$', file_get_contents(SiteInfo::$siteDomain.$contentPath), $this->plainText);
 		}
 		
-		public function RemoveKeyword($key)
+		public function removeKeyword($key)
 		{
 			$this->plainText = str_replace('$'.$key.'$', '', $this->plainText);
 		}
 		
 		// Override this method to process particular keyword in each child class
-		protected function HandleKeywords() { }
+		protected function handleKeywords() { }
 		
-		public static function GetStringsInRow($stringArray)
+		public static function getStringsInRow($stringArray)
 		{
 			$outString = '';
 			foreach ($stringArray as $item)
@@ -64,6 +64,12 @@
 			}
 			
 			return trim($outString);
+		}
+		
+		protected function loadContentFile($path, $defaultText = '')
+		{
+			$content = @file_get_contents($path);
+			return ($content === FALSE) ? $defaultText : $content;
 		}
 		
 	}

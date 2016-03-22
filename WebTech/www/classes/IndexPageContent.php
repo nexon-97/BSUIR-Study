@@ -19,10 +19,10 @@
 			$this->pinnedPost = new PinnedPostBlock();
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('PINNED_POST', $this->pinnedPost->GetText());
-			$this->ReplaceKeywordByText('LATEST_POSTS_FEED', '');
+			$this->replaceKeywordByText('PINNED_POST', $this->pinnedPost->getText());
+			$this->replaceKeywordByText('LATEST_POSTS_FEED', '');
 		}
 		
 	}

@@ -14,9 +14,9 @@
 			$this->scriptPath = $path;
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('PATH', $this->scriptPath);
+			$this->replaceKeywordByText('PATH', $this->scriptPath);
 		}
 		
 	}

@@ -25,10 +25,10 @@
 			$this->footer = new FooterBlock();
 			$this->horizontalMenu = new HeaderHorizontalMenu();
 			
-			$this->LoadContent($contentType);
+			$this->loadContent($contentType);
 		}
 		
-		public function LoadContent($contentType)
+		public function loadContent($contentType)
 		{	
 			switch ($contentType)
 			{
@@ -50,12 +50,12 @@
 			}
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('HEADER', $this->header->GetText());
-			$this->ReplaceKeywordByText('HORIZONTAL_MENU', $this->horizontalMenu->GetText());		
-			$this->ReplaceKeywordByText('PAGE_CONTENT', $this->content->GetText());
-			$this->ReplaceKeywordByText('FOOTER', $this->footer->GetText());
+			$this->replaceKeywordByText('HEADER', $this->header->getText());
+			$this->replaceKeywordByText('HORIZONTAL_MENU', $this->horizontalMenu->getText());		
+			$this->replaceKeywordByText('PAGE_CONTENT', $this->content->getText());
+			$this->replaceKeywordByText('FOOTER', $this->footer->getText());
 		}
 		
 	}

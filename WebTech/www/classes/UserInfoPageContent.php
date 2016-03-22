@@ -51,9 +51,9 @@
 			$this->contentPage = new UserProfileErrorMessage();
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('USER_INFO', $this->contentPage->GetText());
+			$this->replaceKeywordByText('USER_INFO', $this->contentPage->getText());
 		}
 	}
 

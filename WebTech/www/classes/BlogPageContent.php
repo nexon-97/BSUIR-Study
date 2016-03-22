@@ -9,10 +9,10 @@
 		{
 			parent::__construct('blogContent');
 			
-			$this->LoadCategoriesQuickViews();
+			$this->loadCategoriesQuickViews();
 		}
 		
-		private function LoadCategoriesQuickViews()
+		private function loadCategoriesQuickViews()
 		{
 			$this->categoriesQuickViews = array();
 			
@@ -25,36 +25,36 @@
 			}
 		}
 		
-		private function GetCategoriesQuickViewText()
+		private function getCategoriesQuickViewText()
 		{
 			$categoriesArray = array();
 			foreach ($this->categoriesQuickViews as $category)
 			{
-				$categoriesArray[] = $category->GetText();
+				$categoriesArray[] = $category->getText();
 			}
 			
-			return Template::GetStringsInRow($categoriesArray);
+			return Template::getStringsInRow($categoriesArray);
 		}
 		
-		private function GetAllBlogPostsListing()
+		private function getAllBlogPostsListing()
 		{
 			$postsListing = array();
 			
 			$databaseConnection = new Database('nexonlab');
-			$result = $databaseConnection->Query('SELECT title FROM `blog_entries`');
-			if ($result->num_rows > 0) {
-				while($row = $result->fetch_assoc()) {
-					$postsListing[] = '<h3>'.$row['title'].'</h3>';
-				}
+			$entriesList = $databaseConnection->Select('blog_entries', 'id');
+
+			foreach ($entriesList as $item)
+			{
+				$postsListing[] = '<h3>'.$this->loadContentFile(SiteInfo::getPostTitlePath($item['id']), '[TITLE]') .'</h3>';
 			}
 			
-			return Template::GetStringsInRow($postsListing);
+			return Template::getStringsInRow($postsListing);
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('CATEGORIES', $this->GetCategoriesQuickViewText());
-			$this->ReplaceKeywordByText('POSTS_LIST', $this->GetAllBlogPostsListing());
+			$this->replaceKeywordByText('CATEGORIES', $this->getCategoriesQuickViewText());
+			$this->replaceKeywordByText('POSTS_LIST', $this->getAllBlogPostsListing());
 		}
 		
 	}

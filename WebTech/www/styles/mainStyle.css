@@ -177,3 +177,48 @@ body
 {
 	font-family: Roboto, Tahoma;
 }
+
+.postCategory
+{
+	text-align: left;
+	margin-top: 15px;
+	margin-left: 15px;
+	font-size: 20px;
+}
+
+.postStats
+{
+	text-align: left;
+	margin-left: 15px;
+	font-size: 16px;
+}
+
+.postTitle
+{
+	text-align: left;
+	margin-left: 15px;
+	margin-bottom: 0px;
+}
+
+.postHR
+{
+	border-color: #666;
+}
+
+.postTextDefault
+{
+	font-size: 16px;
+	text-align: justify;
+}
+
+.postTextDefault p
+{
+	margin: 10px 0px;
+}
+
+.cppCodeSnippet
+{
+	background-color: #FFE77C;
+	border: 1px solid black;
+	padding: 5px;
+}

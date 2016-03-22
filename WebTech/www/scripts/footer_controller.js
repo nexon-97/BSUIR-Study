@@ -17,7 +17,7 @@ $(window).bind
        
 			if (($(document.body).height() + footerHeight) < $(window).height())
 			{
-				$footer.css({ position: "absolute", top: footerTop });
+				$footer.css({ position: "absolute", bottom: "0px" });
 			}
 			else
 			{

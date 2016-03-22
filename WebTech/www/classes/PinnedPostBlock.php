@@ -12,11 +12,11 @@
 			parent::__construct('pinnedPostLayout');
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('TITLE', 'Post title');
-			$this->ReplaceKeywordByText('DESCRIPTION', 'Pinned post full description, which can be even multilined');
-			$this->ReplaceKeywordByText('IMAGE', 'img/pinned_post_img.jpg');
+			$this->replaceKeywordByText('TITLE', 'Post title');
+			$this->replaceKeywordByText('DESCRIPTION', 'Pinned post full description, which can be even multilined');
+			$this->replaceKeywordByText('IMAGE', 'img/pinned_post_img.jpg');
 		}
 		
 	}

@@ -15,33 +15,33 @@
 			$this->attributes = new AttributesList();
 			if (is_array($attributes))
 			{
-				$this->AddAttributes($attributes);
+				$this->addAttributes($attributes);
 			}
 		}
 		
-		public function AddAttribute($key, $value)
+		public function addAttribute($key, $value)
 		{
-			$this->attributes->AddAttribute($key, $value);
+			$this->attributes->addAttribute($key, $value);
 		}
 		
-		public function AddAttributes($array)
+		public function addAttributes($array)
 		{
-			$this->attributes->AddAttributes($array);
+			$this->attributes->addAttributes($array);
 		}
 		
-		public function GetAttribute($key)
+		public function getAttribute($key)
 		{
-			return $this->attributes->GetAttribute($key);
+			return $this->attributes->getAttribute($key);
 		}
 		
-		public function GetAttributes()
+		public function getAttributes()
 		{
 			return $this->attributes;
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('ATTRIBUTES', $this->attributes->GetText());
+			$this->replaceKeywordByText('ATTRIBUTES', $this->attributes->getText());
 		}
 		
 	}

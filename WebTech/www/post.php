@@ -2,5 +2,5 @@
 	require_once('classes/DocumentTemplate.php');
 	
 	$template = new DocumentTemplate('post');
-	echo $template->GetText();
+	echo $template->getText();
 ?>

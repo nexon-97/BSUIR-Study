@@ -14,9 +14,9 @@
 			$this->stylesheetPath = $path;
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('PATH', $this->stylesheetPath);
+			$this->replaceKeywordByText('PATH', $this->stylesheetPath);
 		}
 		
 	}

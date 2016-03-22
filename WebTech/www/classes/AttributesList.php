@@ -10,28 +10,28 @@
 			$this->attributes = array();
 		}
 		
-		public function AddAttribute($key, $value)
+		public function addAttribute($key, $value)
 		{
 			$this->attributes[$key] = $value;
 		}
 		
-		public function AddAttributes($array)
+		public function addAttributes($array)
 		{
 			if (is_array($array))
 			{
 				foreach ($array as $key => $value)
 				{
-					$this->AddAttribute($key, $value);
+					$this->addAttribute($key, $value);
 				}
 			}
 		}
 		
-		public function GetAttribute($key)
+		public function getAttribute($key)
 		{
 			return $this->attributes[$key];
 		}
 		
-		public function GetText()
+		public function getText()
 		{
 			$outString = '';
 			foreach ($this->attributes as $key => $value)

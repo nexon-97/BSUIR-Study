@@ -16,10 +16,10 @@
 			$this->href = $href;
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('CAPTION', $this->caption);
-			$this->ReplaceKeywordByText('HREF', $this->href);
+			$this->replaceKeywordByText('CAPTION', $this->caption);
+			$this->replaceKeywordByText('HREF', $this->href);
 		}
 		
 	}

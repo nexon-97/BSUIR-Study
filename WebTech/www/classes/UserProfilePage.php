@@ -48,7 +48,7 @@
 		{
 			if (isset($node))
 			{
-				return $node->GetText();
+				return $node->getText();
 			}
 			else
 			{
@@ -56,18 +56,18 @@
 			}
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('NICKNAME', $this->nickname);
-			$this->ReplaceKeywordByText('RIGHTS', $this->rightsStr);
-			$this->ReplaceKeywordByText('NAME', $this->name);
-			$this->ReplaceKeywordByText('SURNAME', $this->surname);
-			$this->ReplaceKeywordByText('EMAIL', $this->email);
-			$this->ReplaceKeywordByText('AVATAR', $this->avatar);			
-			$this->ReplaceKeywordByText('PHONE_NUMBER', $this->getNodeText($this->phone));
-			$this->ReplaceKeywordByText('VK_LINK', $this->getNodeText($this->vkLink));
-			$this->ReplaceKeywordByText('TWITTER_LINK', $this->getNodeText($this->twitterLink));
-			$this->ReplaceKeywordByText('LINKEDIN_LINK', $this->getNodeText($this->linkedinLink));
+			$this->replaceKeywordByText('NICKNAME', $this->nickname);
+			$this->replaceKeywordByText('RIGHTS', $this->rightsStr);
+			$this->replaceKeywordByText('NAME', $this->name);
+			$this->replaceKeywordByText('SURNAME', $this->surname);
+			$this->replaceKeywordByText('EMAIL', $this->email);
+			$this->replaceKeywordByText('AVATAR', $this->avatar);			
+			$this->replaceKeywordByText('PHONE_NUMBER', $this->getNodeText($this->phone));
+			$this->replaceKeywordByText('VK_LINK', $this->getNodeText($this->vkLink));
+			$this->replaceKeywordByText('TWITTER_LINK', $this->getNodeText($this->twitterLink));
+			$this->replaceKeywordByText('LINKEDIN_LINK', $this->getNodeText($this->linkedinLink));
 		}
 	}
 

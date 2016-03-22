@@ -30,15 +30,15 @@
 			$menuItemsList = array();
 			foreach ($this->menuItems as $item)
 			{
-				$menuItemsList[] = $item->GetText();
+				$menuItemsList[] = $item->getText();
 			}
 			
-			return Template::GetStringsInRow($menuItemsList);
+			return Template::getStringsInRow($menuItemsList);
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('MENU_ITEMS', $this->GetMenuItemsList());
+			$this->replaceKeywordByText('MENU_ITEMS', $this->GetMenuItemsList());
 		}
 		
 	}

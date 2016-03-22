@@ -8,7 +8,7 @@
 			parent::__construct('header');
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
 			
 		}

@@ -19,26 +19,26 @@
 			parent::__construct('document');
 			
 			$this->pageTitle = 'Page title';
-			$this->LoadMetaTags();
-			$this->LoadStylesheets();
-			$this->LoadScripts();
-			$this->LoadBody($contentType);
+			$this->loadMetaTags();
+			$this->loadStylesheets();
+			$this->loadScripts();
+			$this->loadBody($contentType);
 		}
 		
-		private function LoadMetaTags()
+		private function loadMetaTags()
 		{
 			$this->metaTags = array();
 			$this->metaTags[] = new MetaTag(array('charset' => 'UTF-8'));
 			$this->metaTags[] = new MetaTag(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=10'));
 		}
 		
-		private function LoadStylesheets()
+		private function loadStylesheets()
 		{
 			$this->stylesheets = array();
 			$this->stylesheets[] = new StylesheetTag('styles/mainStyle.css');
 		}
 		
-		private function LoadScripts()
+		private function loadScripts()
 		{
 			$this->scripts = array();
 			$this->scripts[] = new ScriptTag('scripts/jquery-1.12.1.min.js');
@@ -46,53 +46,53 @@
 			$this->scripts[] = new ScriptTag('scripts/footer_controller.js');
 		}
 		
-		private function LoadBody($contentType)
+		private function loadBody($contentType)
 		{
 			$this->body = new DocumentBody($contentType);
 		}
 		
-		private function GetMetaTagsStr()
+		private function getMetaTagsStr()
 		{
 			$tagsArray = array();
 			foreach ($this->metaTags as $tag)
 			{
-				$tagsArray[] = $tag->GetText();
+				$tagsArray[] = $tag->getText();
 			}
 			
-			return Template::GetStringsInRow($tagsArray);
+			return Template::getStringsInRow($tagsArray);
 		}
 		
-		private function GetStylesheetsStr()
+		private function getStylesheetsStr()
 		{
 			$stylesheetsArray = array();
 			foreach ($this->stylesheets as $stylesheet)
 			{
-				$stylesheetsArray[] = $stylesheet->GetText();
+				$stylesheetsArray[] = $stylesheet->getText();
 			}
 			
-			return Template::GetStringsInRow($stylesheetsArray);
+			return Template::getStringsInRow($stylesheetsArray);
 		}
 		
-		private function GetScriptsList()
+		private function getScriptsList()
 		{
 			$scriptsList = array();
 			foreach ($this->scripts as $script)
 			{
-				$scriptsList[] = $script->GetText();
+				$scriptsList[] = $script->getText();
 			}
 			
-			return Template::GetStringsInRow($scriptsList);
+			return Template::getStringsInRow($scriptsList);
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('DOCTYPE', '<!DOCTYPE html>');
-			$this->ReplaceKeywordByText('LANG', 'lang="en-US"');
-			$this->ReplaceKeywordByText('PAGE_TITLE', '<title>'.$this->pageTitle.'</title>');
-			$this->ReplaceKeywordByText('META_TAGS', $this->GetMetaTagsStr());
-			$this->ReplaceKeywordByText('STYLESHEETS', $this->GetStylesheetsStr());
-			$this->ReplaceKeywordByText('JAVASCRIPT_FILES', $this->GetScriptsList());
-			$this->ReplaceKeywordByText('CONTENT', $this->body->GetText());
+			$this->replaceKeywordByText('DOCTYPE', '<!DOCTYPE html>');
+			$this->replaceKeywordByText('LANG', 'lang="en-US"');
+			$this->replaceKeywordByText('PAGE_TITLE', '<title>'.$this->pageTitle.'</title>');
+			$this->replaceKeywordByText('META_TAGS', $this->getMetaTagsStr());
+			$this->replaceKeywordByText('STYLESHEETS', $this->getStylesheetsStr());
+			$this->replaceKeywordByText('JAVASCRIPT_FILES', $this->getScriptsList());
+			$this->replaceKeywordByText('CONTENT', $this->body->getText());
 		}
 		
 	}

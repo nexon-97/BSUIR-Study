@@ -7,9 +7,9 @@
 			parent::__construct('contactPage');
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			//$this->ReplaceKeywordByText('CATEGORIES', $this->GetCategoriesQuickViewText());
+			//$this->replaceKeywordByText('CATEGORIES', $this->getCategoriesQuickViewText());
 		}
 	}
 

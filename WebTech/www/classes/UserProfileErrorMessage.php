@@ -1,17 +1,11 @@
 <?php
-	require_once('Template.php');
+	require_once('ErrorMessage.php');
 
-	class UserProfileErrorMessage extends Template
+	class UserProfileErrorMessage extends ErrorMessage
 	{
 		public function __construct()
 		{
-			parent::__construct('user_error_message');
-			
-		}
-		
-		protected function HandleKeywords()
-		{
-			//$this->ReplaceKeywordByText('USER_INFO', $this->contentPage->GetText());
+			parent::__construct('Error', 'Sorry, but requested user not found.');
 		}
 	}
 

@@ -24,7 +24,7 @@
 			$articles = $databaseConnection->SelectConditionalLimited
 			(
 				'blog_entries',
-				'title, creation_date, description, image, author',
+				'id, creation_date, image, author',
 				'category = ' . $this->categoryId,
 				$maxArticles
 			);
@@ -35,8 +35,8 @@
 				$authorDesc = $databaseConnection->SelectConditional('user_profiles', 'id, nickname', 'id = ' . $item['author']);
 				$authorDesc = $authorDesc[0];
 				$this->articleHeaders[] = new BlogPostPreview(
-					$item['title'], $item['creation_date'], $item['description'], $item['image'], $authorDesc['nickname'], '#',
-					'user.php?id=' . $authorDesc['id']);
+					$item['id'], $item['creation_date'], $item['image'], $authorDesc['nickname'],
+					'post.php?id=' . $item['id'], 'user.php?id=' . $authorDesc['id']);
 			}
 		}
 		
@@ -45,16 +45,16 @@
 			$articlesArray = array();
 			foreach ($this->articleHeaders as $preview)
 			{
-				$articlesArray[] = $preview->GetText();
+				$articlesArray[] = $preview->getText();
 			}
 			
-			return Template::GetStringsInRow($articlesArray);
+			return Template::getStringsInRow($articlesArray);
 		}
 		
-		protected function HandleKeywords()
+		protected function handleKeywords()
 		{
-			$this->ReplaceKeywordByText('CATEGORY_TITLE', $this->categoryTitle);
-			$this->ReplaceKeywordByText('POSTS', $this->GetArticlesPreviewText());
+			$this->replaceKeywordByText('CATEGORY_TITLE', $this->categoryTitle);
+			$this->replaceKeywordByText('POSTS', $this->GetArticlesPreviewText());
 		}
 	}
 
