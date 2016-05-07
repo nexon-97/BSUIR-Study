@@ -1,4 +1,4 @@
-<div id="pinnedPostWrapper" class="centered">
+<div id="pinnedPostWrapper" class="centered" align="center">
 <table>
 <tr>
 <td id="pinnedPostText">
