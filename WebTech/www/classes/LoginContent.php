@@ -10,7 +10,28 @@
 		{
 			parent::__construct('general_content_block');
 			
-			$this->loginForm = new LoginForm();
+			$auth = Authorization::getInstance();
+			$hasCredentials = isset($_POST['loginUsernameInput'], $_POST['loginPasswordInput']);
+			
+			$logInResult = false;
+			if ($hasCredentials)
+			{
+				$username = $_POST['loginUsernameInput'];
+				$password = $_POST['loginPasswordInput'];
+				
+				$logInResult = $auth->tryLogIn($username, $password);
+			}
+			
+			$showLogInErrors = ($hasCredentials and !$logInResult);
+			if ($logInResult === false)
+			{
+				$this->loginForm = new LoginForm($showLogInErrors);
+			}
+			else
+			{
+				// Show login success window
+				Utils::redirectToIndex();
+			}
 		}
 		
 		protected function handleKeywords()
@@ -18,5 +39,4 @@
 			$this->replaceKeywordByText('CONTENT', $this->loginForm->getText());
 		}
 	}
-
 ?>

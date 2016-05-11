@@ -10,11 +10,6 @@
 <td align="right" style="padding-right: 5px;">
 <input class="loginInput" type="text" id="usernameInput" name="loginUsernameInput"/>
 </td>
-<td style="padding-left: 5px;">
-<div style="background: #FF3232; border-radius: 5px; padding: 5px 10px; display: none;">
-$LOGIN_ERROR_TEXT$
-</div>
-</td>
 </tr>
 <tr>
 <td>
@@ -23,19 +18,21 @@ $LOGIN_ERROR_TEXT$
 <td align="right" style="padding-right: 5px;">
 <input class="loginInput" type="password" id="passwordInput" name="loginPasswordInput"/>
 </td>
-<td style="padding-left: 5px;">
-<div style="background: #FF3232; border-radius: 5px; padding: 5px 10px; display: none;">
-$PASSWORD_ERROR_TEXT$
-</div>
-</td>
 </tr>
 <tr>
-<td colspan="3" align="center" style="padding: 10px;">
+<td colspan="2" align="center" style="padding: 10px;">
 <input class="button" type="submit" value="Log In" id="submitInput"/>
 </td>
 </tr>
 <tr>
-<td colspan="3" align="center" style="padding: 10px;">
+<td colspan="2" align="center">
+<div class="loginErrorBox" style="display: $ERROR_DISPLAY$">
+Invalid username and password combination!
+</div>
+</td>
+</tr>
+<tr>
+<td colspan="2" align="center" style="padding: 10px;">
 <a href="http://www.nexonlab.by/register.php">Register</a> | <a href="http://www.nexonlab.by/restorepass.php">Restore password</a>
 </td>
 </tr>
