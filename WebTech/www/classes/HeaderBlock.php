@@ -23,8 +23,9 @@
 		
 		private function loadButtons($authorized)
 		{
+			$currentPageURI = substr($_SERVER['REQUEST_URI'], 1);
 			$this->logInButton = new SimpleButton('Log In', 'login.php', !$authorized, 'loginButtonSection');
-			$this->logOutButton = new SimpleButton('Log Out', 'logout.php?from=blog.php', $authorized, 'loginButtonSection');
+			$this->logOutButton = new SimpleButton('Log Out', 'logout.php?from='.$currentPageURI, $authorized, 'loginButtonSection');
 			$this->registerButton = new SimpleButton('Register', 'register.php', true, 'loginButtonSection');
 		}
 		

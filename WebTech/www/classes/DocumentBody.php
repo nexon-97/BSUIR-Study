@@ -13,7 +13,6 @@
 
 	class DocumentBody extends Template
 	{
-		
 		protected $header;
 		protected $footer;
 		protected $horizontalMenu;
@@ -22,6 +21,8 @@
 		public function __construct($contentType)
 		{
 			parent::__construct('bodyTemplate');
+			
+			$auth = Authorization::getInstance();
 			
 			$this->header = new HeaderBlock();
 			$this->footer = new FooterBlock();

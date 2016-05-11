@@ -4,18 +4,14 @@
 
 	class AdminBarContent extends Template
 	{		
-		protected $loginForm;
-	
 		public function __construct()
 		{
 			parent::__construct('general_content_block');
-			
-			$this->loginForm = new LoginForm();
 		}
 		
 		protected function handleKeywords()
 		{
-			$this->replaceKeywordByText('CONTENT', $this->loginForm->getText());
+			$this->replaceKeywordByText('CONTENT', '<h1>ADMIN BAR</h1>');
 		}
 	}
 
