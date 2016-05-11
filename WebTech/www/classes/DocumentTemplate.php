@@ -1,5 +1,4 @@
 <?php
-
 	require_once('MetaTag.php');
 	require_once('StylesheetTag.php');
 	require_once('ScriptTag.php');
@@ -7,7 +6,6 @@
 
 	class DocumentTemplate extends Template
 	{
-		
 		protected $metaTags;
 		public $pageTitle;
 		protected $stylesheets;
@@ -95,8 +93,6 @@
 			$this->replaceKeywordByText('STYLESHEETS', $this->getStylesheetsStr());
 			$this->replaceKeywordByText('JAVASCRIPT_FILES', $this->getScriptsList());
 			$this->replaceKeywordByText('CONTENT', $this->body->getText());
-		}
-		
+		}	
 	}
-
 ?>

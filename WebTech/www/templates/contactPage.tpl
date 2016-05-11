@@ -19,7 +19,7 @@
 </tr>
 <tr>
 <td align="center" colspan="2" class="contactTableTdPadding">
-<input type="submit" style="font-size: 14px;" id="msgSubmit" value="Send" name="msgTextSendButton"/>
+<input class="button" type="submit" style="font-size: 14px;" id="msgSubmit" value="Send" name="msgTextSendButton"/>
 </td>
 </tr>
 </table>

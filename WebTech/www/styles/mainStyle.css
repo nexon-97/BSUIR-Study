@@ -25,12 +25,6 @@ body
 	font-family: Roboto, Tahoma, Verdata, sans
 }
 
-pre
-{
-    white-space: pre-wrap;
-	background-color: #AAA;
-}
-
 .header
 {
 	min-width: 640px;
@@ -285,4 +279,15 @@ footer
 .usernameLink:hover
 {
 	color: #FFD800;
+}
+
+.button
+{
+	background-color: #0094FF;
+	border: none;
+	border-radius: 6px;
+	padding: 5px 10px;
+	font-weight: bold;
+	color: white;
+	cursor: pointer;
 }
