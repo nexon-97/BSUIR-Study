@@ -1,5 +1,4 @@
 <?php
-
 	require_once('PinnedPostBlock.php');
 
 	class IndexPageContent extends Template
@@ -24,7 +23,5 @@
 			$this->replaceKeywordByText('PINNED_POST', $this->pinnedPost->getText());
 			$this->replaceKeywordByText('LATEST_POSTS_FEED', '');
 		}
-		
 	}
-
 ?>
