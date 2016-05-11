@@ -23,24 +23,26 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `blogcategories`
+-- Table structure for table `user_social_links`
 --
 
-CREATE TABLE IF NOT EXISTS `blogcategories` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+CREATE TABLE IF NOT EXISTS `user_social_links` (
+  `user_id` int(10) unsigned NOT NULL,
+  `phone` varchar(32) NOT NULL,
+  `vk` varchar(128) NOT NULL,
+  `twitter` varchar(128) NOT NULL,
+  `linkedin` varchar(128) NOT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `blogcategories`
+-- Dumping data for table `user_social_links`
 --
 
-INSERT INTO `blogcategories` (`id`, `name`) VALUES
-(1, 'Samples & Tutorials'),
-(2, 'C++'),
-(3, 'OpenGL ES');
+INSERT INTO `user_social_links` (`user_id`, `phone`, `vk`, `twitter`, `linkedin`) VALUES
+(1, '+375291901254', 'http://vk.com/id53576025', '', 'https://www.linkedin.com/in/denis-ponyakov-a7aab3b6'),
+(2, '+375333040490', 'http://vk.com/id95811438', '', ''),
+(3, '+375447108938', '', '', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

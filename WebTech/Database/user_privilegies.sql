@@ -23,24 +23,23 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `blogcategories`
+-- Table structure for table `user_privilegies`
 --
 
-CREATE TABLE IF NOT EXISTS `blogcategories` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+CREATE TABLE IF NOT EXISTS `user_privilegies` (
+  `user_id` int(10) unsigned NOT NULL,
+  `rights` int(10) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `blogcategories`
+-- Dumping data for table `user_privilegies`
 --
 
-INSERT INTO `blogcategories` (`id`, `name`) VALUES
-(1, 'Samples & Tutorials'),
-(2, 'C++'),
-(3, 'OpenGL ES');
+INSERT INTO `user_privilegies` (`user_id`, `rights`) VALUES
+(1, 4),
+(2, 2),
+(3, 2);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
