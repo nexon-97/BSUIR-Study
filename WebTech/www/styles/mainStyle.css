@@ -25,6 +25,12 @@ body
 	font-family: Roboto, Tahoma, Verdata, sans
 }
 
+pre
+{
+    white-space: pre-wrap;
+	background-color: #AAA;
+}
+
 .header
 {
 	min-width: 640px;
@@ -212,6 +218,7 @@ body
 {
 	font-size: 16px;
 	text-align: justify;
+	padding: 0px 10px;
 }
 
 .postTextDefault p
@@ -221,7 +228,7 @@ body
 
 .cppCodeSnippet
 {
-	background-color: #FFE77C;
+	background-color: #EEE;
 	border: 1px solid black;
 	padding: 5px;
 }
@@ -229,4 +236,53 @@ body
 footer
 {
 	min-width: 640px;
+}
+
+.loginFormContainer
+{
+	max-width: 800px;
+	min-width: 300px;
+}
+
+#loginFormTable
+{
+	padding: 25px;
+}
+
+.loginInput
+{
+	min-width: 250px;
+	max-width: 400px;
+}
+
+.submitInput
+{
+	width: 100px;
+}
+
+.loginCaption
+{
+	padding-left: 5px;
+	padding-right: 15px;
+	padding-bottom: 6px;
+	padding-top: 6px;
+}
+
+.errorMessage
+{
+	margin: 50px;
+	min-width: 400px;
+	max-width: 600px;
+	padding: 30px;
+}
+
+.commentContainer
+{
+	margin: 10px 5px;
+	border-radius: 20px;
+}
+
+.usernameLink:hover
+{
+	color: #FFD800;
 }

@@ -41,11 +41,11 @@
 			$postsListing = array();
 			
 			$databaseConnection = new Database('nexonlab');
-			$entriesList = $databaseConnection->Select('blog_entries', 'id');
+			$entriesList = $databaseConnection->Select('blog_entries', 'id, title');
 
 			foreach ($entriesList as $item)
 			{
-				$postsListing[] = '<h3>'.$this->loadContentFile(SiteInfo::getPostTitlePath($item['id']), '[TITLE]') .'</h3>';
+				$postsListing[] = '<h3><a href="post.php?id='.$item['id'].'">'.$item['title'].'</a></h3>';
 			}
 			
 			return Template::getStringsInRow($postsListing);

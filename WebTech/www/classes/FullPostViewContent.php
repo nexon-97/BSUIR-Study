@@ -26,7 +26,7 @@
 			if (ctype_digit($postId))
 			{
 				$databaseConnection = new Database('nexonlab');
-				$postInfo = $databaseConnection->SelectConditional('blog_entries', 'id, category, creation_date, author', 'id = ' . $postId);
+				$postInfo = $databaseConnection->SelectConditional('blog_entries', '*', 'id = ' . $postId);
 				if (count($postInfo) > 0)
 				{
 					$postInfo = $postInfo[0];
@@ -38,7 +38,8 @@
 					$authorInfo = $authorInfo[0];
 
 					$this->contentBlock = new FullPostView($categoryTitle,
-						$postInfo['id'], $postInfo['creation_date'], $authorInfo['id'], $authorInfo['nickname']);
+						$postInfo['id'], $postInfo['title'], $postInfo['desc'],
+						$postInfo['creation_date'], $authorInfo['id'], $authorInfo['nickname']);
 					return true;
 				}
 			}
@@ -51,5 +52,4 @@
 			$this->replaceKeywordByText('CONTENT', $this->contentBlock->getText());
 		}
 	}
-
 ?>

@@ -36,6 +36,7 @@
 		{
 			$this->stylesheets = array();
 			$this->stylesheets[] = new StylesheetTag('styles/mainStyle.css');
+			$this->stylesheets[] = new StylesheetTag('styles/highlight_style.css');
 		}
 		
 		private function loadScripts()
@@ -44,6 +45,7 @@
 			$this->scripts[] = new ScriptTag('scripts/jquery-1.12.1.min.js');
 			$this->scripts[] = new ScriptTag('scripts/effects.js');
 			$this->scripts[] = new ScriptTag('scripts/footer_controller.js');
+			$this->scripts[] = new ScriptTag('scripts/highlight.js');
 		}
 		
 		private function loadBody($contentType)

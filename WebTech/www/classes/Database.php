@@ -7,6 +7,11 @@
 		public function __construct($databaseName)
 		{
 			$this->MySQLDatabase = new mysqli('www.nexonlab.by', 'root', '2246baklan', $databaseName);
+			
+			// Enable UTF-8 encoding
+			$this->MySQLDatabase->query("SET NAMES 'utf8';");
+			$this->MySQLDatabase->query("SET CHARACTER SET 'utf8';");
+			$this->MySQLDatabase->query("SET SESSION collation_connection = 'utf8_general_ci';");
 		}
 		
 		public function __destruct()
@@ -22,10 +27,13 @@
 		public function ParseSelectResult($result)
 		{
 			$parsedArray = array();
-			if ($result->num_rows > 0) {
-				while ($item = $result->fetch_assoc())
-				{
-					$parsedArray[] = $item;
+			if ($result !== false)
+			{
+				if ($result->num_rows > 0) {
+					while ($item = $result->fetch_assoc())
+					{
+						$parsedArray[] = $item;
+					}
 				}
 			}
 			

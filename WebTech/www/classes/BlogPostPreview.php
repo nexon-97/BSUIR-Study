@@ -12,12 +12,12 @@
 		public $authorLink;
 		
 		public function __construct(
-			$postId, $date, $imagePath = 'img/noimage.jpg', $author = '', $href = '#', $authorLink = '#')
+			$postId, $title, $shortDesc, $date, $imagePath = 'img/noimage.jpg', $author = '', $href = '#', $authorLink = '#')
 		{
 			parent::__construct('blog_post_preview');
 			
-			$this->postTitle = $this->loadContentFile(SiteInfo::getPostTitlePath($postId), '[TITLE]');
-			$this->postShortDescription = $this->loadContentFile(SiteInfo::getPostShortTextPath($postId), '[DESC]');
+			$this->postTitle = $title;
+			$this->postShortDescription = $shortDesc;
 			
 			$this->displayStyle = 0;
 			$this->imagePath = $imagePath;

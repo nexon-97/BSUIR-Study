@@ -1,6 +1,6 @@
 <?php
 	require_once('classes/DocumentTemplate.php');
 	
-	$template = new DocumentTemplate('user');
+	$template = new DocumentTemplate('error');
 	echo $template->GetText();
 ?>

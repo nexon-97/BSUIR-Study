@@ -1,0 +1,14 @@
+[
+	{
+		"title": "Error",
+		"desc": "Oops... Some undefined error occured."
+	},
+	{
+		"title": "Not enough rights",
+		"desc": "You don't have permission to access this section!"
+	},
+	{
+		"title": "User not found",
+		"desc": "Requested user not found!"
+	}
+]

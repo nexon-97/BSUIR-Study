@@ -1,7 +1,0 @@
-﻿<p>Ever since the first public release of Unreal Engine 4 I’ve been using a neat little custom SoundNode that makes life easier for audio designers
-when dealing with mono/stereo sound playback in (networked) games. The node originates from the official ShooterGame sample content available on
-the Learn-tab of the UE4 launcher. I’ve used it in several others projects too including Switch and the SurvivalGame sample project.</p>
-<p>The core functionality of the node is to check whether the owner that plays the sound is a local player or a remotely replicated client. This makes
-it really easy to play stereo sounds for your controlled Pawn and use 3D-attenuated sounds for any other player or AI controlled bot that exists in
-the same session.</p>
-<p>[IMAGE]</p>

@@ -1,6 +1,7 @@
 <?php
 	require_once('UserProfilePage.php');
 	require_once('UserProfileErrorMessage.php');
+	require_once('Utils.php');
 
 	class UserInfoPageContent extends Template
 	{
@@ -48,7 +49,7 @@
 		
 		private function loadUserErrorPage()
 		{
-			$this->contentPage = new UserProfileErrorMessage();
+			Utils::redirectToErrorPage(USER_NOT_FOUND_ERROR);
 		}
 		
 		protected function handleKeywords()

@@ -24,7 +24,7 @@
 			$articles = $databaseConnection->SelectConditionalLimited
 			(
 				'blog_entries',
-				'id, creation_date, image, author',
+				'id, creation_date, image, author, title, short_desc',
 				'category = ' . $this->categoryId,
 				$maxArticles
 			);
@@ -35,12 +35,13 @@
 				$authorDesc = $databaseConnection->SelectConditional('user_profiles', 'id, nickname', 'id = ' . $item['author']);
 				$authorDesc = $authorDesc[0];
 				$this->articleHeaders[] = new BlogPostPreview(
-					$item['id'], $item['creation_date'], $item['image'], $authorDesc['nickname'],
+					$item['id'], $item['title'], $item['short_desc'], $item['creation_date'],
+					$item['image'], $authorDesc['nickname'],
 					'post.php?id=' . $item['id'], 'user.php?id=' . $authorDesc['id']);
 			}
 		}
 		
-		private function GetArticlesPreviewText()
+		private function getArticlesPreviewText()
 		{
 			$articlesArray = array();
 			foreach ($this->articleHeaders as $preview)
@@ -54,8 +55,7 @@
 		protected function handleKeywords()
 		{
 			$this->replaceKeywordByText('CATEGORY_TITLE', $this->categoryTitle);
-			$this->replaceKeywordByText('POSTS', $this->GetArticlesPreviewText());
+			$this->replaceKeywordByText('POSTS', $this->getArticlesPreviewText());
 		}
 	}
-
 ?>
