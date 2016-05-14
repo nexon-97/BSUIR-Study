@@ -321,5 +321,17 @@ footer
 	background-color: #FF2B2B;
 	color: white;
 	padding: 5px 10px;
-	border-radius: 10px; 
+	border-radius: 10px;
+	text-align: center;
+}
+
+.requiredField
+{
+	color: red;
+}
+
+#registerForm hr
+{
+	border: 1px solid #CCC;
+	margin: 5px 15px;
 }

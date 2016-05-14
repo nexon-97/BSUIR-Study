@@ -34,6 +34,18 @@
 		const MODERATOR_RIGHTS = 3;
 		const ADMIN_RIGHTS = 4;
 		
+		const MIN_USERNAME_LENGTH = 4;
+		const MAX_USERNAME_LENGTH = 32;
+		const MIN_PASSWORD_LENGTH = 6;
+		const MAX_PASSWORD_LENGTH = 16;
+		
+		const AUTH_FAIL = 0;
+		const AUTH_SUCCESS = 1;
+		const AUTH_INVALID_LOGIN = 2;
+		const AUTH_INVALID_PASSWORD = 3;
+		
+		protected $validUsernameChars;
+		
 		protected $username;
 		protected $passwordHash;
 		protected $authorized;
@@ -42,6 +54,7 @@
 		
 		protected function init()
 		{
+			$this->fillValidUsernameChars();
 			$this->resetLoginData();		
 			$this->authorizeFromCookies();
 		}
@@ -102,7 +115,16 @@
 		
 		public function tryLogIn($username, $password)
 		{
-			$success = false;
+			// Validate user login and password
+			if (!$this->isValidUsername($username))
+			{
+				return self::AUTH_INVALID_LOGIN;
+			}
+			
+			if (!$this->isValidPassword($password))
+			{
+				return self::AUTH_INVALID_PASSWORD;
+			}
 			
 			$passwordHash = md5($password);
 			
@@ -118,15 +140,15 @@
 					$dbRights = $db->SelectConditional('user_privilegies', 'rights', "user_id = $userId");
 					$this->logIn($username, $userId, $dbRights[0]['rights'], $passwordHash);
 					
-					$success = true;
+					return self::AUTH_SUCCESS;
 				}
 			}
 			
-			return $success;
+			return self::AUTH_FAIL;
 		}
 		
 		protected function logIn($username, $userId, $rights, $hash)
-		{
+		{			
 			$this->username = $username;
 			$this->userId = $userId;
 			$this->userRights = $rights;
@@ -163,6 +185,110 @@
 		public function getUserId()
 		{
 			return $this->userId;
+		}
+		
+		protected function fillValidUsernameChars()
+		{
+			$this->validUsernameChars = array();
+			
+			// Add digits
+			for ($charCode = ord('0'); $charCode <= ord('9'); $charCode++)
+			{
+				$this->validUsernameChars[] = chr($charCode);
+			}
+			
+			// Add chars
+			for ($charCode = ord('a'); $charCode <= ord('z'); $charCode++)
+			{
+				$this->validUsernameChars[] = chr($charCode);
+				$this->validUsernameChars[] = strtoupper(chr($charCode));
+			}
+			
+			// Add special symbols
+			array_push($this->validUsernameChars, '_', '$', '.');
+		}
+		
+		public function isValidUsername($username)
+		{
+			$usernameLength = strlen($username);
+			if ($usernameLength >= self::MIN_USERNAME_LENGTH and $usernameLength <= self::MAX_USERNAME_LENGTH)
+			{
+				$usernameChars = str_split($username);
+				foreach ($usernameChars as $char)
+				{
+					if (!in_array($char, $this->validUsernameChars))
+					{
+						return false;
+					}
+				}
+				
+				// Username is valid, when it fits in length, and has no invalid characters
+				return true;
+			}
+			
+			return false;
+		}
+		
+		public function isValidPassword($password)
+		{
+			$passwordLength = strlen($password);
+			if ($passwordLength >= self::MIN_PASSWORD_LENGTH and $passwordLength <= self::MAX_PASSWORD_LENGTH)
+			{
+				$passwordChars = str_split($password);
+				foreach ($passwordChars as $char)
+				{
+					if (!in_array($char, $this->validUsernameChars))
+					{
+						return false;
+					}
+				}
+				
+				// Password is valid, when it fits in length, and has no invalid characters
+				return true;
+			}
+			
+			return false;
+		}
+		
+		public function usernameAlreadyTaken($username)
+		{
+			$db = new Database('nexonlab');
+			$userData = $db->SelectConditional('user_profiles', 'id', 'nickname = "'.$username.'"');
+			
+			return (count($userData) === 1);
+		}
+		
+		public function isValidEmail($email)
+		{
+			return filter_var($email, FILTER_VALIDATE_EMAIL);
+		}
+		
+		public function emailAlreadyTaken($email)
+		{
+			$db = new Database('nexonlab');
+			$userData = $db->SelectConditional('user_profiles', 'id', 'email = "'.$email.'"');
+			
+			return (count($userData) === 1);
+		}
+		
+		public function registerUser($userData)
+		{
+			$db = new Database('nexonlab');
+			$db->Query('INSERT INTO user_profiles (nickname, email, password, name, surname)
+			VALUES (
+				"'.$userData['login'].'", "'.$userData['email'].'", MD5("'.$userData['password'].'"), 
+				"'.$userData['name'].'", "'.$userData['surname'].'"
+			);');
+			
+			$userId = $db->SelectConditional('user_profiles', 'id', 'nickname = "'.$userData['login'].'"');
+			$userId = $userId[0]['id'];
+			
+			// Set user privilegies to default
+			$db->Query('INSERT INTO user_privilegies (user_id, rights) VALUES ('.$userId.', 2);');
+			
+			// Load social info
+			$db->Query('INSERT INTO user_social_links (user_id, phone, vk, twitter, linkedin)
+				VALUES ('.$userId.', "'.$userData['phone'].'", "'.$userData['vk'].'", "'.$userData['twitter'].'", "'.$userData['linkedin'].'");');
 		}
 	}
 ?>

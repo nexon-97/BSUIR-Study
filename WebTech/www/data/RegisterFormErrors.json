@@ -1,0 +1,20 @@
+{
+	"login":
+	{
+		"1": "Invalid login",
+		"2": "Login already taken"
+	},
+	"password":
+	{
+		"1": "Invalid password"
+	},
+	"password_repeat":
+	{
+		"1": "Password doesn't match"
+	},
+	"email":
+	{
+		"1": "Invalid email",
+		"2": "This email already registered"
+	}
+}

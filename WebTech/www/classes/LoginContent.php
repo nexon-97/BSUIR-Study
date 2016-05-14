@@ -13,7 +13,7 @@
 			$auth = Authorization::getInstance();
 			$hasCredentials = isset($_POST['loginUsernameInput'], $_POST['loginPasswordInput']);
 			
-			$logInResult = false;
+			$logInResult = Authorization::AUTH_FAIL;
 			if ($hasCredentials)
 			{
 				$username = $_POST['loginUsernameInput'];
@@ -22,8 +22,9 @@
 				$logInResult = $auth->tryLogIn($username, $password);
 			}
 			
-			$showLogInErrors = ($hasCredentials and !$logInResult);
-			if ($logInResult === false)
+			$loginFailed = ($logInResult !== Authorization::AUTH_SUCCESS);
+			$showLogInErrors = ($hasCredentials and $loginFailed);
+			if ($loginFailed)
 			{
 				$this->loginForm = new LoginForm($showLogInErrors);
 			}

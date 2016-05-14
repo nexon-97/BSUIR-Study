@@ -10,6 +10,7 @@
 	require_once('AdminBarContent.php');
 	require_once('LoginContent.php');
 	require_once('ErrorMessage.php');
+	require_once('RegisterPageContent.php');
 
 	class DocumentBody extends Template
 	{
@@ -61,6 +62,9 @@
 					break;
 				case 'login':
 					$this->content = new LoginContent();
+					break;
+				case 'register':
+					$this->content = new RegisterPageContent();
 					break;
 				case 'index':
 				default:

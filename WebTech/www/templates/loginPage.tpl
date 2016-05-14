@@ -33,7 +33,13 @@ Invalid username and password combination!
 </tr>
 <tr>
 <td colspan="2" align="center" style="padding: 10px;">
-<a href="http://www.nexonlab.by/register.php">Register</a> | <a href="http://www.nexonlab.by/restorepass.php">Restore password</a>
+<hr style="margin-bottom: 15px;" />
+<a href="http://www.nexonlab.by/register.php">
+<span class="button" style="margin-right: 3px">Register</span>
+</a>
+<a href="http://www.nexonlab.by/restorepass.php">
+<span class="button" style="margin-left: 3px">Restore password</span>
+</a>
 </td>
 </tr>
 </table>
