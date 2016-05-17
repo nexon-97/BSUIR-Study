@@ -1,13 +1,15 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Win32;
+using System.IO;
 
 namespace HttpClient
 {
 	public partial class MainWindow : Window
 	{
         private int ResponseHeaderItemsDisplayed;
+		private Nexon.HttpResponse LastResponse;
 
 		public MainWindow()
 		{
@@ -16,7 +18,7 @@ namespace HttpClient
 
 		private void WindowLoaded(object sender, RoutedEventArgs e)
 		{
-			Nexon.ApplicationContext Context = Nexon.ApplicationContext.Instance;
+			ClearButtonClick(null, null);
 		}
 
 		private Nexon.HttpRequest GenerateRequest()
@@ -25,7 +27,7 @@ namespace HttpClient
 			Request.ConnectionType = Nexon.ConnectionType.KeepAlive;
 			Request.Host = HostNameInput.Text;
 			Request.Method = Nexon.RequestMethod.Get;
-			Request.Page = "/index.php";
+			Request.Page = ResourceNameInput.Text;
 
 			return Request;
 		}
@@ -41,21 +43,22 @@ namespace HttpClient
             if (ConnectionResult)
             {
                 Nexon.HttpRequest Request = GenerateRequest();
-                Nexon.HttpResponce Response = Context.ActiveClient.SendRequest(Request);
+				LastResponse = Context.ActiveClient.SendRequest(Request);
 
-                ResponceTextField.Text = Response.ToString();
-
-                LoadResponseHeaderOnScreen(Response);
+                ResponceTextField.Text = LastResponse.ToString();
+                LoadResponseHeaderOnScreen(LastResponse);
             }
 		}
 
-        private void LoadResponseHeaderOnScreen(Nexon.HttpResponce Response)
+        private void LoadResponseHeaderOnScreen(Nexon.HttpResponse Response)
         {
-            foreach (var Item in Response.ResponceValues)
+            foreach (var Item in Response.ResponseValues)
             {
                 AddResponseHeaderItem(Item.Key, Item.Value);
             }
-        }
+
+			ResponseCode.Text = string.Format("{0} - {1}", Response.ServerStateCode.ToString(), Response.ServerStateCodeDesc);
+		}
 
         private void ClearResponseHeaderTab()
         {
@@ -101,5 +104,43 @@ namespace HttpClient
 
             ResponseHeaderItemsDisplayed++;
         }
+
+		private void ClearButtonClick(object sender, RoutedEventArgs e)
+		{
+			ResponceTextField.Text = string.Empty;
+			ClearResponseHeaderTab();
+			LastResponse = null;
+			ResponseCode.Text = string.Empty;
+		}
+
+		private void SaveToFileButtonClick(object sender, RoutedEventArgs e)
+		{
+			if (LastResponse != null)
+			{
+				SaveFileDialog Dialog = new SaveFileDialog();
+				Dialog.CheckPathExists = true;
+				Dialog.OverwritePrompt = true;
+				Dialog.Title = "Choose file path and name";
+				Dialog.Filter = "Binary File (*.bin)|*.bin|Text File (*.txt)|*.txt";
+
+				Nexon.HttpContent.ContentType ResponseContentType = LastResponse.AttachedContent._ContentType;
+				Dialog.FilterIndex = (int) ResponseContentType + 1;
+
+				if (Dialog.ShowDialog() == true)
+				{
+					string FileName = Dialog.FileName;
+
+					switch (ResponseContentType)
+					{
+						case Nexon.HttpContent.ContentType.Binary:
+							File.WriteAllBytes(FileName, LastResponse.AttachedContent._Data);
+							break;
+						case Nexon.HttpContent.ContentType.PlainText:
+							File.WriteAllText(FileName, LastResponse.AttachedContent.StringRepresentation);
+							break;
+					}
+				}
+			}
+		}
 	}
 }

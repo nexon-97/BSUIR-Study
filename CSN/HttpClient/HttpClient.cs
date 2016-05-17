@@ -41,7 +41,7 @@ namespace Nexon
             return false;
 		}
 
-		public HttpResponce SendRequest(HttpRequest Request)
+		public HttpResponse SendRequest(HttpRequest Request)
 		{
 			if (HttpStream != null)
 			{
@@ -52,7 +52,7 @@ namespace Nexon
                 byte[] ReadBuffer = new byte[BufferSize];
                 HttpStream.Read(ReadBuffer, 0, BufferSize);
 
-                return new HttpResponce(ReadBuffer);
+                return new HttpResponse(ReadBuffer);
 			}
 
 			return null;

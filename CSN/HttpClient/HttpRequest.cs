@@ -56,9 +56,8 @@ namespace Nexon
 		{
 			StringBuilder ResultBuilder = new StringBuilder();
 
-			Page = "/index.php";
 			string RequestText = string.Format(
-				"{0} {1} HTTP/1.1\nHost: {2}\nAccept: text/html\nConnection: {3}\n\n",
+				"{0} /{1} HTTP/1.1\nHost: {2}\nAccept: */*\nConnection: {3}\n\n",
 				GetRequestMethodString(Method),
 				Page,
 				Host,

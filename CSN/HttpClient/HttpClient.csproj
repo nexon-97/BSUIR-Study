@@ -67,7 +67,7 @@
     <Compile Include="HttpClient.cs" />
     <Compile Include="HttpContent.cs" />
     <Compile Include="HttpRequest.cs" />
-    <Compile Include="HttpResponce.cs" />
+    <Compile Include="HttpResponse.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
