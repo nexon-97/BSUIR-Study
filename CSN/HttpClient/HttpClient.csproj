@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="ApplicationContext.cs" />
     <Compile Include="HttpClient.cs" />
+    <Compile Include="HttpContent.cs" />
     <Compile Include="HttpRequest.cs" />
     <Compile Include="HttpResponce.cs" />
     <Compile Include="MainWindow.xaml.cs">
