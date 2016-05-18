@@ -53,5 +53,27 @@ namespace Nexon
 			_ContentType = ContentType;
 			_Encoding = Encoding;
 		}
+
+        public HttpContent(byte[] Data)
+        {
+            _Data = Data;
+            _ContentType = ContentType.Binary;
+            _Encoding = Encoding.ASCII;
+        }
+
+        public ContentType CheckContentType()
+        {
+            for (int i = 0; i < _Data.Length; i++)
+            {
+                if (_Data[i] < 32 && _Data[i] != '\n' && _Data[i] != '\r' && _Data[i] != '\t')
+                {
+                    _ContentType = ContentType.Binary;
+                    return _ContentType;
+                }
+            }
+
+            _ContentType = ContentType.PlainText;
+            return _ContentType;
+        }
 	}
 }

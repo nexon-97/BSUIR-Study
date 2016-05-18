@@ -114,14 +114,19 @@ namespace Nexon
 
         public override string ToString()
 		{
-			if (AttachedContent != null && AttachedContent._ContentType == HttpContent.ContentType.PlainText)
+			if (AttachedContent != null)
 			{
-				return AttachedContent.StringRepresentation;
+                if (AttachedContent._ContentType == HttpContent.ContentType.PlainText)
+                {
+                    return AttachedContent.StringRepresentation;
+                }
+                else
+                {
+                    return "[BINARY DATA]";
+                }
 			}
-			else
-			{
-				return "[BINARY DATA]";
-			}
+			
+			return String.Empty;
 		}
 	}
 }

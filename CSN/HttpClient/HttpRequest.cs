@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Collections.Generic;
 
 namespace Nexon
 {
@@ -20,9 +21,17 @@ namespace Nexon
 	{
 		public RequestMethod Method;
 		public ConnectionType ConnectionType;
+        public Dictionary<string, string> RequestHeaders;
 
 		public string Host;
 		public string Page;
+        public HttpContent AttachedContent;
+
+        public HttpRequest(RequestMethod RequestMethod)
+        {
+            RequestHeaders = new Dictionary<string, string>();
+            Method = RequestMethod;
+        }
 
 		public static string GetRequestMethodString(RequestMethod Method)
 		{
@@ -52,16 +61,39 @@ namespace Nexon
 			}
 		}
 
+        public void AddHeader(string Key, string Value)
+        {
+            if (RequestHeaders.ContainsKey(Key))
+            {
+                RequestHeaders[Key] += Value;
+            }
+            else
+            {
+                RequestHeaders.Add(Key, Value);
+            }
+        }
+
 		public override string ToString()
 		{
-			StringBuilder ResultBuilder = new StringBuilder();
+			StringBuilder HeaderBuilder = new StringBuilder();
+            foreach (var Item in RequestHeaders)
+            {
+                HeaderBuilder.AppendFormat("{0}: {1}\n", Item.Key, Item.Value);
+            }
+
+            if (AttachedContent == null)
+            {
+                AttachedContent = new HttpContent(null);
+            }
 
 			string RequestText = string.Format(
-				"{0} /{1} HTTP/1.1\nHost: {2}\nAccept: */*\nConnection: {3}\n\n",
+				"{0} /{1} HTTP/1.1\nHost: {2}\nAccept: */*\nConnection: {3}\n{4}\n{5}",
 				GetRequestMethodString(Method),
 				Page,
 				Host,
-				GetConnectionTypeString(ConnectionType)
+				GetConnectionTypeString(ConnectionType),
+                HeaderBuilder.ToString(),
+                AttachedContent._Data
 			);
 
 			return RequestText;

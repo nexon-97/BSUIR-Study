@@ -62,39 +62,42 @@
                 Send Request
             </Button>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="0" Background="#0094FF" Margin="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">Request</TextBlock>
-            <Border Grid.Row="1" Grid.Column="0" BorderThickness="1" BorderBrush="Black">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Padding="5" Background="Purple">Method</TextBlock>
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <RadioButton GroupName="RequestMethodRadioGroup" IsChecked="True">GET</RadioButton>
-                        <RadioButton GroupName="RequestMethodRadioGroup">POST</RadioButton>
-                        <RadioButton GroupName="RequestMethodRadioGroup">PUT</RadioButton>
-                        <RadioButton GroupName="RequestMethodRadioGroup">DELETE</RadioButton>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-            <Border Grid.Row="1" Grid.Column="1" BorderThickness="1" BorderBrush="Black">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Padding="5" Background="Green">Content Type</TextBlock>
-                    <StackPanel Orientation="Vertical" Margin="5">
-                        <CheckBox IsChecked="True">text/html</CheckBox>
-                        <CheckBox>POST</CheckBox>
-                        <CheckBox>PUT</CheckBox>
-                        <CheckBox>DELETE</CheckBox>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-        </Grid>
+        <Border Grid.Row="1" Grid.Column="0" BorderThickness="1" BorderBrush="Black" Margin="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="5" FontWeight="Bold" FontSize="20">Request</TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="10 0">Headers</TextBlock>
+                <Border Grid.Row="2" Grid.Column="0" BorderThickness="1" BorderBrush="Black" Margin="5">
+                    <ScrollViewer VerticalScrollBarVisibility="Visible">
+                        <Grid Background="White" Name="RequestHeaderGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ScrollViewer>
+                </Border>
+                <Button Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Margin="5 0" Padding="10 2" Click="AddHeaderClick">Add Header</Button>
+                <TextBox Grid.Row="4" Grid.Column="0" Margin="5" Padding="5"
+                     Name="AttachedContentData"  ScrollViewer.VerticalScrollBarVisibility="Visible" TextWrapping="Wrap"></TextBox>
+                <Grid Grid.Row="5" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Row="0" Grid.Column="0" Margin="5" Click="ClearAttachedFileButtonClick">Clear</Button>
+                    <Button Grid.Row="0" Grid.Column="1" Margin="5" Click="AttachFileButtonClick">Attach File</Button>
+                </Grid>
+            </Grid>
+        </Border>
         <Border Grid.Row="1" Grid.Column="1" BorderThickness="1" BorderBrush="Black" Margin="10">
             <Grid>
                 <Grid.RowDefinitions>
