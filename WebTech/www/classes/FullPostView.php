@@ -1,6 +1,6 @@
 <?php
 	require_once('Comment.php');
-	require_once('Database.php');
+	require_once('Authorization.php');
 
 	class FullPostView extends Template
 	{
@@ -12,6 +12,7 @@
 		private $author;
 		
 		private $postStats;
+		private $postId;
 		private $comments;
 		
 		public function __construct($category, $postId, $title, $postText, $creationDate, $authorId, $author, $authorLink = '#')
@@ -24,6 +25,7 @@
 			$this->creationDate = $creationDate;
 			$this->authorId = $authorId;
 			$this->author = $author;
+			$this->postId = $postId;
 			
 			$this->postStats = $creationDate . ' by ' . $author;
 			
@@ -35,14 +37,20 @@
 			$this->comments = array();
 			
 			$databaseConnection = new Database('nexonlab');
-			$comments = $databaseConnection->SelectConditional('comments', 'text, author_id, date', 'post_id = ' . $postId);
+			$comments = $databaseConnection->SelectConditionalOrder('comments', 'id, text, author_id, date', 'post_id = ' . $postId, 'date');
+
+			$auth = Authorization::getInstance();
 			
 			foreach ($comments as $comment)
 			{
 				$userInfo = $databaseConnection->SelectConditional('user_profiles', 'id, nickname, avatar', 'id = ' . $comment['author_id']);
 				$userInfo = $userInfo[0];
 				
-				$this->comments[] = new Comment($userInfo['nickname'], $userInfo['id'], $comment['text'], $comment['date'], $userInfo['avatar']);
+				$canDeleteComment = (($auth->getRights() >= Authorization::MODERATOR_RIGHTS) or ($auth->getUserId() === $comment['author_id']));
+				$referer = 'post.php?id='.$this->postId;
+				$this->comments[] = new Comment(
+					$userInfo['nickname'], $userInfo['id'],
+					$comment['text'], $comment['date'], $userInfo['avatar'], $comment['id'], $canDeleteComment, $referer);
 			}
 		}
 		
@@ -68,6 +76,7 @@
 			$this->replaceKeywordByText('CATEGORY_LINK', SiteInfo::getCategoryLinkByTitle($this->category));
 			
 			$this->replaceKeywordByText('POST_COMMENTS', $this->getCommentsText());
+			$this->replaceKeywordByText('POST_ID', $this->postId);
 		}
 	}
 ?>

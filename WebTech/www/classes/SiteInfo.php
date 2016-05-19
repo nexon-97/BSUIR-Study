@@ -2,7 +2,7 @@
 
 	abstract class SiteInfo
 	{
-		public static $siteDomain = 'http://www.nexonlab.by/';
+		public static $siteDomain = 'http://nexonlab.by/';
 		
 		public static function getAuthorLink($authorId)
 		{

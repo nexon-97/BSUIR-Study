@@ -12,13 +12,11 @@
 		}
 		else
 		{
-			header('Location: http://www.nexonlab.by/error.php?errcode=1');
-			exit;
+			Utils::redirectToErrorPage(1);
 		}
 	}
 	else
 	{
-		header('Location: http://www.nexonlab.by/login.php');
-		exit;
+		Utils::localRedirect('login.php');
 	}
 ?>

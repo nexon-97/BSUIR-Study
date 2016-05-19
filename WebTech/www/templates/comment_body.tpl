@@ -5,6 +5,9 @@
 <span style="float: left;">
 <strong><a class="usernameLink" href="$USERNAME_LINK$">$USERNAME$</a></strong>
 </span>
+<span style="float: right; padding-left: 15px; display: $REMOVE_BUTTON_DISPLAY$;">
+<a class="removeCommentButton" href="delete.php?entity=comment&amp;id=$COMMENT_ID$&amp;referer=$REFERER$">Remove</a>
+</span>
 <span style="float: right;">
 $CREATION_DATE$
 </span>

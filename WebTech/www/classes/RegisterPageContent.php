@@ -91,6 +91,9 @@
 					
 					$auth->registerUser($userData);
 				}
+
+				// Redirect after registration
+				Utils::redirectToMessagePage(MessagesDatabase::RIGISTER_SUCCESS_MSG);
 			}
 			
 			$this->registerForm = new RegisterForm($loginError, $passwordError, $passwordRepeatError, $emailError);

@@ -11,6 +11,8 @@
 	require_once('LoginContent.php');
 	require_once('ErrorMessage.php');
 	require_once('RegisterPageContent.php');
+	require_once('MessagesDatabase.php');
+	require_once('GeneralMessage.php');
 
 	class DocumentBody extends Template
 	{
@@ -60,6 +62,16 @@
 						$this->content = new ErrorMessage($errorMsg['title'], $errorMsg['desc']);
 					}
 					break;
+				case 'message':
+					if (isset($_GET['msg_id']))
+					{
+						$messageType = (int)($_GET['msg_id']);
+						$messagesDatabase = MessagesDatabase::getInstance();
+						$messageInfo = $messagesDatabase->getMessage($messageType);
+
+						$this->content = new GeneralMessage($messageInfo['title'], $messageInfo['desc'], $messageInfo['type']);
+					}
+					break;
 				case 'login':
 					$this->content = new LoginContent();
 					break;
@@ -83,8 +95,7 @@
 			}				
 			else
 			{
-				header('Location: http://www.nexonlab.by/index.php');
-				exit;
+				Utils::redirectToIndex();
 			}
 			
 			$this->replaceKeywordByText('FOOTER', $this->footer->getText());

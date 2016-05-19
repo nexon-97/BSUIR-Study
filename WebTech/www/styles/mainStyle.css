@@ -22,7 +22,13 @@ table
 
 body
 {
-	font-family: Roboto, Tahoma, Verdata, sans
+	font-family: Roboto, Tahoma, Verdata, sans;
+}
+
+textarea
+{
+	font-family: Roboto, Tahoma, Verdata, sans;
+	font-size: 14px;
 }
 
 .header
@@ -334,4 +340,44 @@ footer
 {
 	border: 1px solid #CCC;
 	margin: 5px 15px;
+}
+
+.adminBarHeader
+{
+	color: #FF670F;
+}
+
+.adminBarMenuButton
+{
+	padding: 5px 10px;
+	font-size: 20px;
+	font-weight: bold;
+	color: black;
+}
+
+.colorVariation1
+{
+	background-color: #FFF0A8;
+}
+
+.colorVariation2
+{
+	background-color: #FFE88E;
+}
+
+.adminBarMenuButton:hover
+{
+	color: white;
+	background-color: #FF6A00;
+}
+
+.removeCommentButton
+{
+	color: #FFD800;
+	font-weight: bold;
+}
+
+.removeCommentButton:hover
+{
+	color: red;
 }

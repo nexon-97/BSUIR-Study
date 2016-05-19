@@ -6,7 +6,7 @@
 		
 		public function __construct($databaseName)
 		{
-			$this->MySQLDatabase = new mysqli('www.nexonlab.by', 'root', '2246baklan', $databaseName);
+			$this->MySQLDatabase = new mysqli('localhost', 'root', '', $databaseName);
 			
 			// Enable UTF-8 encoding
 			$this->MySQLDatabase->query("SET NAMES 'utf8';");
@@ -67,6 +67,17 @@
 		public function SelectConditionalLimited($table, $field, $condition, $limit)
 		{
 			$queryResult = $this->Query("SELECT $field FROM `$table` WHERE $condition LIMIT $limit");
+			return $this->ParseSelectResult($queryResult);
+		}
+
+		public function DeleteConditional($table, $condition)
+		{
+			$this->Query("DELETE FROM `$table` WHERE $condition");
+		}
+
+		public function SelectConditionalOrder($table, $field, $condition, $sortCriteria, $descend = '')
+		{
+			$queryResult = $this->Query("SELECT $field FROM `$table` WHERE $condition ORDER BY $sortCriteria $descend");
 			return $this->ParseSelectResult($queryResult);
 		}
 	}

@@ -1,0 +1,22 @@
+[
+	{
+		"title": "Information",
+		"desc": "It's a default Information message",
+		"type": "0"
+	},
+	{
+		"title": "OK",
+		"desc": "It's OK, man",
+		"type": "1"
+	},
+	{
+		"title": "Error",
+		"desc": "Oops, some error occured",
+		"type": "2"
+	},
+	{
+		"title": "Registered successfully",
+		"desc": "<div>Congratulations!</div><div>You have successfully registered, now use your credentials to log in</div>",
+		"type": "1"
+	}
+]
