@@ -2,9 +2,11 @@
 
 	class Database
 	{
+		const DEFAULT_DATABASE_NAME = 'nexonlab';
+
 		protected $MySQLDatabase;
 		
-		public function __construct($databaseName)
+		public function __construct($databaseName = DEFAULT_DATABASE_NAME)
 		{
 			$this->MySQLDatabase = new mysqli('localhost', 'root', '', $databaseName);
 			
