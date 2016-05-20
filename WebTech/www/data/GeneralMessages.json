@@ -18,5 +18,15 @@
 		"title": "Registered successfully",
 		"desc": "<div>Congratulations!</div><div>You have successfully registered, now use your credentials to log in</div>",
 		"type": "1"
+	},
+	{
+		"title": "Message sent",
+		"desc": "Thanks for leaving your email, we will read it soon",
+		"type": "1"
+	},
+	{
+		"title": "Message not sent",
+		"desc": "Failed to send your message.<br>We apologize for that",
+		"type": "2"
 	}
 ]

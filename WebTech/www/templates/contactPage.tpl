@@ -6,7 +6,7 @@
 <tr>
 <td class="contactTableTdPadding" style="width: 20%">Theme</td>
 <td>
-<input style="width: 100%" type="text" placeholder="Message theme" id="msgTheme" value="" name="msgThemeInput"/>
+<input style="width: 100%" type="text" placeholder="Message theme" id="msgTheme" value="" name="msgTheme"/>
 </td>
 </tr>
 <tr>
@@ -19,7 +19,7 @@
 </tr>
 <tr>
 <td align="center" colspan="2" class="contactTableTdPadding">
-<input class="button" type="submit" style="font-size: 14px;" id="msgSubmit" value="Send" name="msgTextSendButton"/>
+<input class="button" type="submit" style="font-size: 14px;" value="Send"/>
 </td>
 </tr>
 </table>

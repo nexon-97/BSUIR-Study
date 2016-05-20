@@ -55,5 +55,11 @@
 			$authorId = Authorization::getInstance()->getUserId();
 			$database->Query("INSERT INTO `comments` (`text`, `post_id`, `author_id`) VALUES ('$commentText', $postId, $authorId);");
 		}
+
+		public static function sendMail($recepient, $subject, $message)
+		{
+			$message = wordwrap($message, 70, "\r\n");
+			return mail($recepient, $subject, $message);
+		}
 	}
 ?>
