@@ -2,7 +2,7 @@
 using System.IO;
 using System;
 
-public class PlayerManager
+public sealed class PlayerManager
 {
 	#region Fields
 	private static PlayerManager _Instance;
@@ -92,6 +92,8 @@ public class PlayerManager
 
 	public void LoadPlayers()
 	{
+		NetworkController NetworkMgr = NetworkController.Instance;
+
 		if (Directory.Exists(PlayersDirectoryPath))
 		{
 			string[] dirFiles = Directory.GetFiles(PlayersDirectoryPath);
