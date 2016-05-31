@@ -8,22 +8,10 @@ template <class T>
 class ISerializable
 {
 public:
-	std::vector<RTTIClassMemberInfo> & GetSerializationQueue()
-	{
-		if (_serialization_queue.size() == 0)
-		{
-			BuildSerializationQueue();
-		}
-		
-		return _serialization_queue;
-	}
+	virtual std::string ToXmlString(size_t padding_level) = 0;
+	virtual void FromXmlString(char ** str) = 0;
 
 protected:
-	virtual void BuildSerializationQueue() = 0;
-	virtual std::string ToXmlString(size_t padding_level) = 0;
-
-	std::vector<RTTIClassMemberInfo> _serialization_queue;
-
 	char buffer[32];
 	size_t padding_level;
 

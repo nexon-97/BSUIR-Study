@@ -21,5 +21,4 @@ SOURCES     = glwidget.cpp \
     colorblock.cpp
 
 # install
-target.path = /home/nexon/Projects/Qt/VectorEditorBuild
 INSTALLS += target

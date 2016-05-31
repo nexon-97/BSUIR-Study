@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System;
 using System.Globalization;
+using System.Collections.Generic;
 
 public class Session
 {
@@ -26,7 +27,22 @@ public class Session
 		Address = new IPAddress(IPBytes);
 		Port = int.Parse(NetworkAddressParts[1]);
 
-		string DateFormat = @"yyyy-mm-dd hh:mm:ss";
+		string DateFormat = @"yyyy-MM-dd HH:mm:ss";
 		LastActivity = DateTime.ParseExact(LastActivityTimestamp, DateFormat, CultureInfo.InvariantCulture);
+	}
+
+	public bool UpdateOnServer()
+	{
+		WebRequest Request = NetworkController.Instance.GeneratePostRequest(
+			"session",
+			new Dictionary<string, string>()
+			{
+				{ "action"	, "update"		},
+				{ "id"		, Id.ToString()	}
+			}
+		);
+
+		string Response = NetworkController.Instance.GetResponseString(Request);
+		return (Response.Equals("OK"));
 	}
 }

@@ -81,6 +81,14 @@ public:
 		return (size_t) &trash;
 	}
 
+	std::string WrapStringByType(std::string & str, RTTITypeData * type_data, bool nest = false)
+	{
+		char * nest_char = (nest) ? "\n" : "";
+		return "<" + type_data->type_name + " class=\"" +
+			RTTITypeData::GetTypeClassStr(type_data->type_class) +
+			"\">" + nest_char + str + nest_char + "</" + type_data->type_name + ">";
+	}
+
 	template <class T>
 	std::string SerializePrimitive(T data)
 	{
@@ -90,10 +98,87 @@ public:
 			char buffer[32];
 			sprintf_s(buffer, type_data->conversion_format, data);
 
-			return "<" + type_data->type_name + ">" + buffer + "</" + type_data->type_name + ">";
+			return WrapStringByType(std::string(buffer), type_data);
 		}
 
 		return "";
+	}
+
+	template <class T>
+	std::string SerializeArray(T * data, size_t count, size_t padding = 0)
+	{
+		RTTITypeData * type_data = GetRTTIData<T>();
+		char buffer[32];
+		_itoa_s(count, buffer, 10);
+		std::string result = "<" + type_data->type_name + " class=\"array\" size=\"" +
+			buffer + "\">\n";
+
+		for (size_t i = 0; i < count; i++)
+		{
+			switch (type_data->type_class)
+			{
+				case TypeClass::Primitive:
+					result += SerializePrimitive<T>(*data);
+					break;
+				case TypeClass::Class:
+				case TypeClass::Struct:
+					ISerializable<T> * SerializableData = (ISerializable<T>*) data;
+					result += SerializableData->ToXmlString(padding + 1);
+					break;
+			}
+
+			result += "\n";
+			data++;
+		}
+
+		result += "</" + type_data->type_name + ">";
+		return result;
+	}
+
+	template <class T>
+	std::string SerializeClass(T * data, size_t padding = 0)
+	{
+		RTTITypeData * type_data = GetRTTIData<T>();
+		ISerializable<T> * SerializableData = (ISerializable<T>*) data;
+		return SerializableData->ToXmlString(padding);
+	}
+
+	template <class T>
+	T DeserializePrimitive(char ** str)
+	{
+		RTTITypeData * type_data = GetRTTIData<T>();
+		T result;
+
+		// Find header end
+		*str = strstr(*str, ">") + 1;
+		sscanf_s(*str, type_data->conversion_format, &result);
+		*str = strstr(*str, ">") + 1;
+
+		return result;
+	}
+
+	template <class T>
+	void DeserializeArray(char ** str, T * data, size_t & array_size)
+	{
+		RTTITypeData * type_data = GetRTTIData<T>();
+		RTTITypeData * uint_data = GetRTTIData<unsigned int>();
+
+		// Parse node header size
+		*str = strstr(*str, "size=\"") + 6;
+		sscanf_s(*str, uint_data->conversion_format, &array_size);
+		*str = strstr(*str, ">") + 1;
+
+		for (size_t i = 0; i < array_size; i++)
+		{
+			switch (type_data->type_class)
+			{
+				case TypeClass::Primitive:
+					*data = DeserializePrimitive<T>(str);
+					break;
+			}
+
+			data++;
+		}
 	}
 
 private:
@@ -101,10 +186,15 @@ private:
 
 	void RegisterPrimitiveTypes()
 	{
+		RegisterRTTIData<char>("char", TypeClass::Primitive, "%c");
+		RegisterRTTIData<unsigned char>("byte", TypeClass::Primitive, "%u");
+		RegisterRTTIData<short>("short", TypeClass::Primitive, "%d");
 		RegisterRTTIData<int>("int", TypeClass::Primitive, "%d");
-		RegisterRTTIData<unsigned int>("unsigned int", TypeClass::Primitive, "%u");
+		RegisterRTTIData<unsigned int>("uint", TypeClass::Primitive, "%u");
+		RegisterRTTIData<long>("long", TypeClass::Primitive, "%d");
+		RegisterRTTIData<unsigned long>("ulong", TypeClass::Primitive, "%u");
 		RegisterRTTIData<float>("float", TypeClass::Primitive, "%f");
-		RegisterRTTIData<double>("double", TypeClass::Primitive, "%f");
+		RegisterRTTIData<double>("double", TypeClass::Primitive, "%lf");
 	}
 };
 
