@@ -7,8 +7,6 @@ public class PlayerCreationMenuController : MonoBehaviour
 
 	public PlayerInfo Info;
 	public InputField NameInput;
-	public PlayerPreviewPanel LeftTeamPanel;
-	public PlayerPreviewPanel RightTeamPanel;
 
 	void Start()
 	{
@@ -19,7 +17,5 @@ public class PlayerCreationMenuController : MonoBehaviour
 	void Update()
 	{
 		Info.Name = NameInput.text;
-		Info.LeftTeam = LeftTeamPanel.CurrentState;
-		Info.RightTeam = RightTeamPanel.CurrentState;
 	}
 }

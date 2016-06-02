@@ -10,7 +10,7 @@ public class CloudController : MonoBehaviour
 	private SpriteRenderer sriteRenderer;
 
 	// Use this for initialization
-	void Start ()
+	void Start()
 	{
 		sriteRenderer = GetComponent<SpriteRenderer>();
 	}

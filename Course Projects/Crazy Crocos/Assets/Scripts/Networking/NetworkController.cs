@@ -10,8 +10,15 @@ public sealed class NetworkController
 {
 	const string ServicesPath = "http://nexonlab.hol.es/game_server/";
 
-	private Session ActiveSession;
-	private NetworkPlayer ActivePlayer;
+	public Session ActiveSession
+	{
+		get; set;
+	}
+
+	public NetworkPlayer ActivePlayer
+	{
+		get; set;
+	}
 
 	#region Singleton pattern part
 	private static NetworkController instance;
