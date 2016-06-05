@@ -29,6 +29,10 @@
 		// ==========================
 
 		const RIGISTER_SUCCESS_MSG = 3;
+		const CONFIRM_EMAIL_MSG = 6;
+		const INVALID_CONFIRM_TOKEN_MSG = 7;
+		const RESET_PASS_INFO_MSG = 8;
+		const PASSWORD_RESET_TOKEN_OK_MSG = 9;
 
 		protected $messagesPath = 'GeneralMessages.json';
 		protected $messages;

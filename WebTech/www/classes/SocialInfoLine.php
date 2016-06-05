@@ -9,8 +9,8 @@
 		{
 			parent::__construct('social_info_line');
 			
-			$this->property = $property;
-			$this->value = $value;
+			$this->property = htmlspecialchars($property);
+			$this->value = htmlspecialchars($value);
 		}
 		
 		protected function handleKeywords()

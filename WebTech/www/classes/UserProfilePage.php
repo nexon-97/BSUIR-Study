@@ -14,16 +14,23 @@
 		public $twitterLink;
 		public $linkedinLink;
 		
-		public function __construct($nickname, $rights, $avatar, $name, $surname, $email)
+		public $canEdit;
+		public $id;
+		
+		public function __construct($nickname, $rights, $avatar, $name, $surname, $email, $id)
 		{
 			parent::__construct('user_profile');
 			
-			$this->nickname = $nickname;
+			$this->nickname = htmlspecialchars($nickname);
 			$this->rightsStr = $rights;
-			$this->name = $name;
-			$this->surname = $surname;
+			$this->name = htmlspecialchars($name);
+			$this->surname = htmlspecialchars($surname);
 			$this->email = $email;
 			$this->avatar = $avatar;
+			
+			$auth = Authorization::getInstance();
+			$this->id = $id;
+			$this->canEdit = ($id === $auth->getUserId() or $auth->getRights() === Authorization::ADMIN_RIGHTS);
 		}
 		
 		public function setSocialInfo($phone, $vkLink, $twitterLink, $linkedinLink)
@@ -68,6 +75,8 @@
 			$this->replaceKeywordByText('VK_LINK', $this->getNodeText($this->vkLink));
 			$this->replaceKeywordByText('TWITTER_LINK', $this->getNodeText($this->twitterLink));
 			$this->replaceKeywordByText('LINKEDIN_LINK', $this->getNodeText($this->linkedinLink));
+			$this->replaceKeywordByText('EDIT_BTN_DISPLAY', $this->canEdit ? 'inline-block' : 'none');
+			$this->replaceKeywordByText('USER_ID', $this->id);
 		}
 	}
 

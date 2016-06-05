@@ -2,13 +2,11 @@
 
 	class Database
 	{
-		const DEFAULT_DATABASE_NAME = 'nexonlab';
-
 		protected $MySQLDatabase;
 		
-		public function __construct($databaseName = DEFAULT_DATABASE_NAME)
+		public function __construct($databaseName = 'u864060956_db', $user = 'u864060956_nexon', $password = 'SLTBDLPOAQMK28')
 		{
-			$this->MySQLDatabase = new mysqli('localhost', 'root', '', $databaseName);
+			$this->MySQLDatabase = new mysqli('mysql.hostinger.ru', $user, $password, $databaseName);
 			
 			// Enable UTF-8 encoding
 			$this->MySQLDatabase->query("SET NAMES 'utf8';");
@@ -82,6 +80,11 @@
 			$queryResult = $this->Query("SELECT $field FROM `$table` WHERE $condition ORDER BY $sortCriteria $descend");
 			return $this->ParseSelectResult($queryResult);
 		}
+		
+		public function getInsertId()
+		{
+			return $this->MySQLDatabase->insert_id;
+		}
 	}
 
-?>
+?>		

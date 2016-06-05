@@ -381,3 +381,9 @@ footer
 {
 	color: red;
 }
+
+.addPostButton
+{
+	display: block;
+	float: left;
+}

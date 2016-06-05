@@ -77,7 +77,8 @@
 					$emailError === RegisterForm::INPUT_VALID)
 				{
 					// Pack user data to register
-					$userData = array(
+					$userData = array
+					(
 						'login' => $login,
 						'password' => $password,
 						'email' => $email,
@@ -90,10 +91,10 @@
 					);
 					
 					$auth->registerUser($userData);
+					
+					// Redirect after registration
+					Utils::redirectToMessagePage(MessagesDatabase::CONFIRM_EMAIL_MSG);
 				}
-
-				// Redirect after registration
-				Utils::redirectToMessagePage(MessagesDatabase::RIGISTER_SUCCESS_MSG);
 			}
 			
 			$this->registerForm = new RegisterForm($loginError, $passwordError, $passwordRepeatError, $emailError);

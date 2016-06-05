@@ -1,5 +1,6 @@
 <?php
 	require_once('Comment.php');
+	require_once('CommentForm.php');
 	require_once('Authorization.php');
 
 	class FullPostView extends Template
@@ -15,6 +16,10 @@
 		private $postId;
 		private $comments;
 		
+		private $commentForm;
+		private $deleteButton;
+		private $editButton;
+		
 		public function __construct($category, $postId, $title, $postText, $creationDate, $authorId, $author, $authorLink = '#')
 		{
 			parent::__construct('full_post_view');
@@ -29,15 +34,22 @@
 			
 			$this->postStats = $creationDate . ' by ' . $author;
 			
-			$this->loadComments($postId);
+			$this->loadComments();
+			
+			$auth = Authorization::getInstance();
+			if ($auth->getUserId() === $this->authorId or $auth->getRights() >= Authorization::MODERATOR_RIGHTS)
+			{
+				$this->deleteButton = new SimpleButton('Delete', 'delete.php?entity=post&id='.$this->postId.'&referer=blog.php');
+				$this->editButton = new SimpleButton('Edit', 'edit.php?entity=post&id='.$this->postId.'&referer=blog.php');
+			}
 		}
 		
-		public function loadComments($postId)
+		public function loadComments()
 		{
 			$this->comments = array();
 			
-			$databaseConnection = new Database('nexonlab');
-			$comments = $databaseConnection->SelectConditionalOrder('comments', 'id, text, author_id, date', 'post_id = ' . $postId, 'date');
+			$databaseConnection = new Database('u864060956_db');
+			$comments = $databaseConnection->SelectConditionalOrder('comments', 'id, text, author_id, date', 'post_id = ' . $this->postId, 'date');
 
 			$auth = Authorization::getInstance();
 			
@@ -52,6 +64,11 @@
 					$userInfo['nickname'], $userInfo['id'],
 					$comment['text'], $comment['date'], $userInfo['avatar'], $comment['id'], $canDeleteComment, $referer);
 			}
+			
+			if ($auth->getRights() >= Authorization::LOGGED_USER_RIGHTS)
+			{
+				$this->commentForm = new CommentForm($this->postId);
+			}
 		}
 		
 		private function getCommentsText()
@@ -65,6 +82,16 @@
 			return Template::getStringsInRow($commentsArray);
 		}
 		
+		private function getDeleteButtonText()
+		{
+			return (isset($this->deleteButton)) ? $this->deleteButton->getText() : '';
+		}
+		
+		private function getEditButtonText()
+		{
+			return (isset($this->editButton)) ? $this->editButton->getText() : '';
+		}
+		
 		protected function handleKeywords()
 		{
 			$this->replaceKeywordByText('POST_CATEGORY', $this->category);
@@ -76,7 +103,11 @@
 			$this->replaceKeywordByText('CATEGORY_LINK', SiteInfo::getCategoryLinkByTitle($this->category));
 			
 			$this->replaceKeywordByText('POST_COMMENTS', $this->getCommentsText());
+			$this->replaceKeywordByText('COMMENT_FORM', (isset($this->commentForm) ? $this->commentForm->getText() : ''));
 			$this->replaceKeywordByText('POST_ID', $this->postId);
+			
+			$this->replaceKeywordByText('DELETE_POST_BUTTON', $this->getDeleteButtonText());
+			$this->replaceKeywordByText('EDIT_POST_BUTTON', $this->getEditButtonText());
 		}
 	}
 ?>

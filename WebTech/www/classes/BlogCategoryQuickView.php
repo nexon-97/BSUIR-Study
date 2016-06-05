@@ -20,7 +20,7 @@
 		
 		private function LoadArticleHeaders($maxArticles = 5)
 		{
-			$databaseConnection = new Database('nexonlab');
+			$databaseConnection = new Database('u864060956_db');
 			$articles = $databaseConnection->SelectConditionalLimited
 			(
 				'blog_entries',

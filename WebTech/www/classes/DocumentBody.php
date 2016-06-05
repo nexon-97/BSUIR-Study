@@ -12,6 +12,9 @@
 	require_once('ErrorMessage.php');
 	require_once('RegisterPageContent.php');
 	require_once('MessagesDatabase.php');
+	require_once('AddPostContent.php');
+	require_once('EditPostContent.php');
+	require_once('EditUserContent.php');
 	require_once('GeneralMessage.php');
 
 	class DocumentBody extends Template
@@ -78,6 +81,15 @@
 				case 'register':
 					$this->content = new RegisterPageContent();
 					break;
+				case 'addpost':
+					$this->content = new AddPostContent();
+					break;
+				case 'editpost':
+					$this->content = new EditPostContent();
+					break;
+				case 'edituser':
+					$this->content = new EditUserContent();
+					break;
 				case 'index':
 				default:
 					$this->content = new IndexPageContent();
@@ -95,10 +107,10 @@
 			}				
 			else
 			{
-				Utils::redirectToIndex();
+				Utils::redirectToErrorPage(0);
 			}
 			
 			$this->replaceKeywordByText('FOOTER', $this->footer->getText());
 		}
 	}
-?>
+?>	

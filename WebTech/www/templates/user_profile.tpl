@@ -16,4 +16,7 @@ $PHONE_NUMBER$
 $VK_LINK$
 $TWITTER_LINK$
 $LINKEDIN_LINK$
+<a href="edit.php?entity=user&id=$USER_ID$"&referer=user.php?id=$USER_ID$>
+<div class="button" style="margin-top: 15px; display: $EDIT_BTN_DISPLAY$">Edit Profile</div>
+</a>
 </div>

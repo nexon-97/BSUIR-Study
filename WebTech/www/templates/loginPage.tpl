@@ -8,7 +8,13 @@
 <div class="loginCaption">Login</div>
 </td>
 <td align="right" style="padding-right: 5px;">
-<input class="loginInput" type="text" id="usernameInput" name="loginUsernameInput"/>
+<script>
+function updateRestorepassLink(val)
+{
+	$('#restorepassLink').attr('href', 'restorepass.php?username=' + val);
+}
+</script>
+<input class="loginInput" type="text" id="usernameInput" name="loginUsernameInput" onchange="updateRestorepassLink(this.value)"/>
 </td>
 </tr>
 <tr>
@@ -34,10 +40,10 @@ Invalid username and password combination!
 <tr>
 <td colspan="2" align="center" style="padding: 10px;">
 <hr style="margin-bottom: 15px;" />
-<a href="http://www.nexonlab.by/register.php">
+<a href="http://www.nexonlab.hol.es/register.php">
 <span class="button" style="margin-right: 3px">Register</span>
 </a>
-<a href="http://www.nexonlab.by/restorepass.php">
+<a href="http://www.nexonlab.hol.es/restorepass.php?username=$$" id="restorepassLink">
 <span class="button" style="margin-left: 3px">Restore password</span>
 </a>
 </td>

@@ -7,7 +7,13 @@
 		$subject = $_POST['msgTheme'];
 		$message = $_POST['msgText'];
 
-		if (Utils::sendMail('denis.ponyakov@nexonlab.hol.es', $subject, $message))
+		// Send mail
+		$message = wordwrap($message, 70, "\r\n");
+
+		// Send
+		$sent = mail('denis.ponyakov@nexonlab.hol.es', $subject, $message);
+
+		if ($sent)
 		{
 			Utils::redirectToMessagePage(4);
 		}

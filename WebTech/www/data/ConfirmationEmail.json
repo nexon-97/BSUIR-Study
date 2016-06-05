@@ -1,0 +1,8 @@
+<h3 style="font-size: 20px;">Hello!</h3>
+<div style="font-size: 14px;">
+<p>Thanks for registration at <a href="http://nexonlab.hol.es/index.php">nexonlab.hol.es</a>!</p>
+<p>Finish your registration by pressing the button below.</p>
+<a href="http://nexonlab.hol.es/confirm.php?user=$USER_ID$&token=$CONFIRM_TOKEN$">
+<span style="display: block; float: left; padding: 5px 10px; background-color: #0094FF; font-weight: bold; font-size: 20px; color: white; text-decoration: none;">Confirm</span>
+</a>
+</div>

@@ -28,5 +28,35 @@
 		"title": "Message not sent",
 		"desc": "Failed to send your message.<br>We apologize for that",
 		"type": "2"
+	},
+	{
+		"title": "Confirm your email",
+		"desc": "<div>It order to finish registration, you should confirm your email address.</div><div>Go to your mail service and find confirmation email.</div>",
+		"type": "0"
+	},
+	{
+		"title": "Confirmation failed",
+		"desc": "Invalid confirmation token!",
+		"type": "2"
+	},
+	{
+		"title": "Password reset registered",
+		"desc": "Your password reset request has been registered. Visit your mail to confirm reset.",
+		"type": "0"
+	},
+	{
+		"title": "Password reset",
+		"desc": "Password reset token confirmed. Password has been reset, use it now to log in",
+		"type": "1"
+	},
+	{
+		"title": "Operation Failed",
+		"desc": "Some of the passwords are invalid, or password repeat doesn't match the original",
+		"type": "2"
+	},
+	{
+		"title": "Password changed",
+		"desc": "Password changed successfully, now log in with new credentials",
+		"type": "1"
 	}
 ]

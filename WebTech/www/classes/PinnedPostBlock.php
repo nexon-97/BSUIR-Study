@@ -24,7 +24,7 @@
 				$pinnedPostId = $jsonDecoded['id'];
 			}
 			
-			$db = new Database('nexonlab');
+			$db = new Database();
 			$postInfo = $db->SelectConditional('blog_entries', '*', 'id = '.$pinnedPostId);
 			if (count($postInfo) == 1)
 			{

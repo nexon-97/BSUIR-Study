@@ -68,7 +68,7 @@
 				$cookieUsername = $_COOKIE['user'];
 				
 				// Load password hash
-				$db = new Database('nexonlab');
+				$db = new Database();
 				$selectResult = $db->SelectConditional('user_profiles', 'id, password', 'nickname = "'.$cookieUsername.'"');
 				if (count($selectResult) > 0)
 				{
@@ -128,7 +128,7 @@
 			
 			$passwordHash = md5($password);
 			
-			$db = new Database('nexonlab');
+			$db = new Database();
 			$serverCredentials = $db->SelectConditional('user_profiles', 'id, password', 'nickname = "'.$username.'"');
 			if (count($serverCredentials) > 0)
 			{
@@ -252,7 +252,7 @@
 		
 		public function usernameAlreadyTaken($username)
 		{
-			$db = new Database('nexonlab');
+			$db = new Database();
 			$userData = $db->SelectConditional('user_profiles', 'id', 'nickname = "'.$username.'"');
 			
 			return (count($userData) === 1);
@@ -265,16 +265,61 @@
 		
 		public function emailAlreadyTaken($email)
 		{
-			$db = new Database('nexonlab');
+			$db = new Database();
 			$userData = $db->SelectConditional('user_profiles', 'id', 'email = "'.$email.'"');
 			
 			return (count($userData) === 1);
 		}
 		
+		public function emailConfirmed($user)
+		{
+			$db = new Database();
+			$confirmationData = $db->SelectConditional('user_privilegies', 'email_confirmed', 'user_id = '.$user);
+			
+			if (count($confirmationData) > 0)
+			{
+				return (int) $confirmationData[0]['email_confirmed'];
+			}
+			
+			return -1;
+		}
+		
+		public function getConfirmToken($user)
+		{
+			$db = new Database();
+			$confirmationData = $db->SelectConditional('user_privilegies', 'confirm_code', 'user_id = '.$user);
+			
+			if (count($confirmationData) > 0)
+			{
+				return $confirmationData[0]['confirm_code'];
+			}
+			
+			return '';
+		}
+		
+		public function getUserIdByLogin($username)
+		{
+			$db = new Database();
+			$confirmationData = $db->SelectConditional('user_profiles', 'id', "nickname = '$username'");
+			
+			if (count($confirmationData) > 0)
+			{
+				return $confirmationData[0]['id'];
+			}
+			
+			return 0;
+		}
+		
+		public function confirmUserMail($user)
+		{
+			$db = new Database();
+			$db->Query('UPDATE user_privilegies SET `email_confirmed` = "1" WHERE `user_id` = '.$user);
+		}
+		
 		public function registerUser($userData)
 		{
-			$db = new Database('nexonlab');
-			$db->Query('INSERT INTO user_profiles (nickname, email, password, name, surname)
+			$db = new Database();
+			$db->Query('INSERT INTO `user_profiles` (nickname, email, password, name, surname)
 			VALUES (
 				"'.$userData['login'].'", "'.$userData['email'].'", MD5("'.$userData['password'].'"), 
 				"'.$userData['name'].'", "'.$userData['surname'].'"
@@ -284,11 +329,35 @@
 			$userId = $userId[0]['id'];
 			
 			// Set user privilegies to default
-			$db->Query('INSERT INTO user_privilegies (user_id, rights) VALUES ('.$userId.', 2);');
+			$confirmCode = md5(rand());
+			$db->Query('INSERT INTO `user_privilegies` (user_id, rights, email_confirmed, confirm_code)
+						VALUES ('.$userId.', 2, 0, \''.$confirmCode.'\');');
+						
+			// Send confirmation email
+			$confirmMailText = Utils::readDataFile('ConfirmationEmail.json');
+			$confirmMailText = str_replace('$USER_ID$', $userId, $confirmMailText);
+			$confirmMailText = str_replace('$CONFIRM_TOKEN$', $confirmCode, $confirmMailText);
+			
+			$emailHeaders = "MIME-Version: 1.0\r\n";
+			$emailHeaders .= "Content-Type: text/html; charset=utf-8\r\n";
+			Utils::sendMail($userData['email'], 'Registration at nexonlab.hol.es', $confirmMailText, $emailHeaders);
 			
 			// Load social info
 			$db->Query('INSERT INTO user_social_links (user_id, phone, vk, twitter, linkedin)
 				VALUES ('.$userId.', "'.$userData['phone'].'", "'.$userData['vk'].'", "'.$userData['twitter'].'", "'.$userData['linkedin'].'");');
+		}
+		
+		public function changeUserPassword($userId, $password)
+		{
+			$db = new Database();
+			$db->Query("UPDATE user_profiles SET password = MD5('$password') WHERE id = $userId");
+		}
+		
+		public function updateUserToken($userId)
+		{
+			$db = new Database();
+			$newToken = md5(rand());
+			$db->Query("UPDATE user_privilegies SET confirm_code = '$newToken' WHERE user_id = $userId");
 		}
 	}
 ?>
