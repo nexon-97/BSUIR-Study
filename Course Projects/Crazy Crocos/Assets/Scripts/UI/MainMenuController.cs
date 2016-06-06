@@ -1,56 +1,85 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System;
-using System.IO;
 
 public class MainMenuController : MonoBehaviour
 {
 	public GameObject MainLayout;
-	public GameObject PlayerCreationMenu;
+	public GameObject RegisterWindow;
 	public GameObject SettingsPanel;
-	public GameObject PlayerFrame;
-	public Text SelectedPlayerText;
+	public GameObject LogInWindow;
+	public GameObject MessageBox;
+
 	public Text SelectedSettingsPlayerText;
 	public Text HelloMessageText;
 	public Text OfflineHint;
+	public Text MessageBoxText;
 
 	public Slider VolumeSlider;
 	public Toggle SoundToggle;
+	public Button StartGameButton;
 
 	public GameSettings TempSettings;
 	public AudioSource MenuAudioSource;
 
+	private GameObject[] ScreenStack;
+	private GameObject ActiveScreen;
+	public GameObject LogInPanel;
+
+	public static MainMenuController Instance;
+
 	private void Start()
 	{
-		MainLayout.SetActive(true);
-		PlayerCreationMenu.SetActive(false);
-		SettingsPanel.SetActive(false);
+		InitScreenStack();
+		SetActiveScreen(MainLayout);
 
-		UpdateHelloMessageText();
-		UpdateOfflineHint();
+		Instance = this;
 	}
 
-	public void OpenPlayersSelectionPanel()
+	private void InitScreenStack()
 	{
-		MainLayout.SetActive(false);
-		PlayerCreationMenu.SetActive(false);
-		SettingsPanel.SetActive(false);
+		ScreenStack = new GameObject[]
+		{
+			MainLayout,
+			RegisterWindow,
+			SettingsPanel,
+			LogInWindow,
+			MessageBox
+		};
+
+		foreach (var Screen in ScreenStack)
+		{
+			Screen.SetActive(false);
+		}
 	}
 
-	public void OpenPlayerCreationMenu()
+	public void SetActiveScreen(GameObject NewScreen)
 	{
-		MainLayout.SetActive(false);
-		PlayerCreationMenu.SetActive(true);
-		SettingsPanel.SetActive(false);
+		if (ActiveScreen != null)
+		{
+			ActiveScreen.SetActive(false);
+		}
+		
+		ActiveScreen = NewScreen;
+		ActiveScreen.SetActive(true);
+
+		UpdateNetworkInfo();
+	}
+
+	public void OpenRegisterWindow()
+	{
+		SetActiveScreen(RegisterWindow);
+	}
+
+	public void OpenLogInWindow()
+	{
+		SetActiveScreen(LogInWindow);
 	}
 
 	public void OpenSettingsPanel()
 	{
 		if (PlayerManager.Instance.ActivePlayer != null)
 		{
-			MainLayout.SetActive(false);
-			PlayerCreationMenu.SetActive(false);
-			SettingsPanel.SetActive(true);
+			SetActiveScreen(SettingsPanel);
 
 			PlayerInfo CurrentInfo = PlayerManager.Instance.ActivePlayer;
 			SelectedSettingsPlayerText.text = string.Format("Selected Player: {0}", CurrentInfo.Name);
@@ -63,9 +92,13 @@ public class MainMenuController : MonoBehaviour
 
 	public void OpenMainLayout()
 	{
-		MainLayout.SetActive(true);
-		PlayerCreationMenu.SetActive(false);
-		SettingsPanel.SetActive(false);
+		SetActiveScreen(MainLayout);
+	}
+
+	public void ShowMessageBox(string Text)
+	{
+		MessageBoxText.text = Text;
+		SetActiveScreen(MessageBox);
 	}
 
 	public void OnApplySettings()
@@ -82,7 +115,6 @@ public class MainMenuController : MonoBehaviour
 			MenuAudioSource.mute = !TempSettings.EnableSound;
 		}
 	}
-
 
 	public void UpdateVolumeState()
 	{
@@ -121,113 +153,29 @@ public class MainMenuController : MonoBehaviour
 		OpenMainLayout();
 	}
 
-	public void SetActivePlayer(Text PlayerNameText)
+	public void UpdateNetworkInfo()
 	{
-		string PlayerName = PlayerNameText.text;
+		bool PlayerAuthorized = NetworkController.Instance.ActivePlayer.Authorized;
 
-		foreach (var player in PlayerManager.Instance.Players)
-		{
-			if (player.Name.Equals(PlayerName))
-			{
-				PlayerManager.Instance.ActivePlayer = player;
-				GameSettings.Update();
-				break;
-			}
-		}
-
-		UpdateSelectedPlayerText();
 		UpdateHelloMessageText();
-	}
 
-	public void UpdateSelectedPlayerText()
-	{
-		SelectedPlayerText.text = string.Format("Selected Player: {0}", PlayerManager.Instance.ActivePlayer.Name);
+		LogInPanel.SetActive(!PlayerAuthorized);
+		OfflineHint.gameObject.SetActive(!PlayerAuthorized);
+		StartGameButton.interactable = PlayerAuthorized;
 	}
 
 	public void UpdateHelloMessageText()
 	{
-		string DisplayedName = (PlayerManager.Instance.ActivePlayer != null)	?
-								PlayerManager.Instance.ActivePlayer.Name		:
-								"...";
-		HelloMessageText.text = string.Format("Hello, {0}!", DisplayedName);
-	}
-
-	public void CreatePlayer()
-	{
-		PlayerInfo CreationInfo = PlayerCreationMenuController.Instance.Info;
-		CreationInfo.LevelsInfo = new LevelStats[LevelManager.Instance.LevelsCount];
-		CreationInfo.LevelsInfo[0].Available = true;
-
-		// Check if such player already exists
-		if (CreationInfo.Name.Length > 0)
+		NetworkPlayer ActivePlayer = NetworkController.Instance.ActivePlayer;
+		if (ActivePlayer != null && ActivePlayer.Authorized)
 		{
-			foreach (var player in PlayerManager.Instance.Players)
-			{
-				if (player.Name.Equals(CreationInfo.Name))
-				{
-					Debug.Log("Such player already registered!");
-					return;
-				}
-			}
-
-			if (CreationInfo.LeftTeam == CreationInfo.RightTeam)
-			{
-				Debug.Log("Two equal characters picked!");
-				return;
-			}
-
-			CreationInfo.SaveToFile();
-			OpenPlayersSelectionPanel();
+			HelloMessageText.text = string.Format("Hello, {0}!", ActivePlayer.Nickname);
+			HelloMessageText.gameObject.SetActive(true);
 		}
 		else
 		{
-			Debug.Log("Empty name!");
+			HelloMessageText.gameObject.SetActive(false);
+			HelloMessageText.text = string.Empty;
 		}
-	}
-
-	public void DeleteSelectedPlayer()
-	{
-		PlayerManager manager = PlayerManager.Instance;
-		if (manager.ActivePlayer != null)
-		{
-			for (int i = 0; i < manager.Players.Length; i++)
-			{
-				if (manager.ActivePlayer.Name.Equals(manager.Players[i].Name))
-				{
-					int j = 0;
-					PlayerInfo RemovedPlayer = manager.Players[i];
-					PlayerInfo[] PlayersArray = new PlayerInfo[manager.Players.Length - 1];
-
-					for (int k = 0; k < manager.Players.Length; k++)
-					{
-						if (manager.Players[k] != RemovedPlayer)
-						{
-							PlayersArray[j] = manager.Players[k];
-							j++;
-						}
-					}
-					
-					manager.Players = PlayersArray;
-					break;
-				}
-			}
-
-			manager.DeletePlayerFile(manager.ActivePlayer.Name);
-
-			if (manager.Players.Length > 0)
-			{
-				manager.ActivePlayer = manager.Players[0];
-
-				UpdateHelloMessageText();
-				GameSettings.Update();
-			}
-		}
-	}
-
-	// Checks, if the player is logged in, and makes OFFLINE hint visibility
-	public void UpdateOfflineHint()
-	{
-		bool PlayerAuthorized = NetworkController.Instance.ActivePlayer.Authorized;
-		OfflineHint.gameObject.SetActive(!PlayerAuthorized);
 	}
 }

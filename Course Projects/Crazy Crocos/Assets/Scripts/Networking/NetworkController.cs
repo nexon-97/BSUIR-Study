@@ -10,7 +10,7 @@ public sealed class NetworkController
 {
 	const string ServicesPath = "http://nexonlab.hol.es/game_server/";
 
-	public Session ActiveSession
+	public Session[] ActiveSessions
 	{
 		get; set;
 	}
@@ -45,83 +45,42 @@ public sealed class NetworkController
 	private void Init()
 	{
 		ActivePlayer = new NetworkPlayer();
-		ActivePlayer.RestoreFromCache();
-		//ActivePlayer.LogIn("Nexon", "test");
+		if (ActivePlayer.RestoreFromCache())
+		{
+			StartActivePlayerSessions();
+		}
+	}
 
+	public void StartActivePlayerSessions()
+	{
 		if (ActivePlayer.Authorized)
 		{
 			// Load IP info
 			IPAddress[] IPs = GetClientIPAddresses();
+			ActiveSessions = new Session[IPs.Length];
+
+			int i = 0;
 			foreach (var IP in IPs)
 			{
 				// Start session on each ip
-				Debug.Log("Start session on " + IP.ToString());
+				ActiveSessions[i] = new Session();
+				ActiveSessions[i].IP = IP;
 
-				StartSession(1, IP.ToString() + ":25546");
+				bool Created = ActiveSessions[i].Create();
+				if (Created)
+				{
+					Debug.Log
+					(
+						string.Format("{0} started session on {1}:{2}",
+						ActivePlayer.Nickname,
+						ActiveSessions[i].IP,
+						ActiveSessions[i].TCPServerPort)
+					);
+				}
+
+				i++;
 			}
 		}
-	}
-
-	public Session LoadSession(int SessionId)
-	{
-		// Form session info GET request
-		WebRequest Request = GeneratePostRequest(
-			"session",
-			new Dictionary<string, string>()
-			{
-				{ "action", "get" },
-				{ "id", SessionId.ToString() }
-			}
-		);
-
-		// Parse response
-		string Response = GetResponseString(Request);
-		if (!Response.Equals("NOT FOUND"))
-		{
-			string[] ParsedResponse = Response.Split('|');
-
-			if (ParsedResponse.Length == 4)
-			{
-				return new Session(int.Parse(ParsedResponse[0]), int.Parse(ParsedResponse[1]), ParsedResponse[2], ParsedResponse[3]);
-			}
-			else
-			{
-				Debug.LogError("Invalid session response data");
-			}
-		}
-
-		return null;
-	}
-
-	public Session StartSession(int UserId, string NetworkAddress)
-	{
-
-		// Form session CREATE request
-		WebRequest Request = GeneratePostRequest(
-			"session",
-			new Dictionary<string, string>()
-			{
-				{ "action", "create" },
-				{ "user_id", UserId.ToString() },
-				{ "address", NetworkAddress }
-			}
-		);
-
-		// Parse response
-		string Response = GetResponseString(Request);
-
-		int SessionId;
-		if (int.TryParse(Response, out SessionId))
-		{
-			ActiveSession = LoadSession(SessionId);
-			return ActiveSession;
-		}
-		else
-		{
-			Debug.LogError("Failed to start new session!");
-		}
-
-		return null;
 	}
 
 	public WebRequest GeneratePostRequest(string ServiceName, Dictionary<string, string> Params)

@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Net;
+using System.Collections.Generic;
 
 public class NetworkPlayer
 {
@@ -99,8 +101,28 @@ public class NetworkPlayer
 		return false;
 	}
 
-	public bool LogIn(string Username, string Password)
+	public bool LogIn(string Login, string Password)
 	{
+		WebRequest LogInRequest = NetworkController.Instance.GeneratePostRequest(
+			"login",
+			new Dictionary<string, string>()
+			{
+				{ "login", Login },
+				{ "password", Password }
+			}
+		);
+
+		string Response = NetworkController.Instance.GetResponseString(LogInRequest).Trim();
+		if (Response.IndexOf("OK") == 0)
+		{
+			string IdPart = Response.Substring(Response.IndexOf(":") + 1).Trim();
+			Id = int.Parse(IdPart);
+			_Nickname = Login;
+
+			return true;
+		}
+
+		Id = Undefined;
 		return false;
 	}
 
