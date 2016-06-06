@@ -1,6 +1,6 @@
 *.opendb
-*.sln
 *.vsproj
+*.csproj
 *.vcproj
 *.bin
 *.ipch
@@ -20,3 +20,8 @@
 *.sdf
 *.exe
 *.ilk
+*.cache
+*.dll
+*.meta
+*.info
+*.user
