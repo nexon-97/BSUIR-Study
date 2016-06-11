@@ -13,9 +13,7 @@ public class SoundController : MonoBehaviour
 	{
 		SourceSound = Source.GetComponent<AudioSource>();
 
-		// Create player and level managers
 		LevelManager.CreateInstance();
-		PlayerManager.CreateInstance();
 
 		SourceSound.volume = GameSettings.ActiveSettings.SoundVolume;
 		if (GameSettings.ActiveSettings.EnableSound)

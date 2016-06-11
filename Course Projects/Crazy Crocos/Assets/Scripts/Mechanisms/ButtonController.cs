@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ButtonController : MonoBehaviour
+public class ButtonController : ReplicatedObject
 {
 	const int PlayerLayer = 9;
 
@@ -14,6 +14,14 @@ public class ButtonController : MonoBehaviour
 	public GameObject Indicator;
 	private float OriginalY;
 
+	const string ButtonStateProperty = "Button State";
+
+
+	private void Start()
+	{
+		// Enable state replication
+		RegisterInNetworkContext();
+	}
 
 	void Update()
 	{
@@ -41,6 +49,8 @@ public class ButtonController : MonoBehaviour
 		{
 			OverlappedObjectsCount++;
 			UpdateState(true);
+
+			ReplicateProperty(ButtonStateProperty, "true");
 		}
 	}
 
@@ -49,7 +59,9 @@ public class ButtonController : MonoBehaviour
 		if (collider.gameObject.layer == PlayerLayer)
 		{
 			OverlappedObjectsCount--;
-			UpdateState(false);		
+			UpdateState(false);
+
+			ReplicateProperty(ButtonStateProperty, "false");
 		}
 	}
 
@@ -84,6 +96,17 @@ public class ButtonController : MonoBehaviour
 					Switchable.Disable();
 				}
 			}	
+		}
+	}
+
+	public override void ReplicationNotify(string Property, string Value)
+	{
+		if (Property.Equals(ButtonStateProperty))
+		{
+			Debug.LogError("Button State Replicated");
+
+			bool NewValue = Value.Equals("true");
+			ButtonState = NewValue;
 		}
 	}
 }

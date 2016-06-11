@@ -1,31 +1,19 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.IO;
-using System.Text;
 using UnityEngine;
 using System.Collections.Generic;
+using Nexon;
 
 public sealed class NetworkController
 {
-	const string ServicesPath = "http://nexonlab.hol.es/game_server/";
-
-	public Session[] ActiveSessions
-	{
-		get; set;
-	}
-
-	public NetworkPlayer ActivePlayer
-	{
-		get; set;
-	}
-
 	#region Singleton pattern part
 	private static NetworkController instance;
 
 	private NetworkController()
 	{
-		Init();
+		
 	}
 
 	public static NetworkController Instance
@@ -41,87 +29,8 @@ public sealed class NetworkController
 		}
 	}
 	#endregion
-
-	private void Init()
-	{
-		ActivePlayer = new NetworkPlayer();
-		if (ActivePlayer.RestoreFromCache())
-		{
-			StartActivePlayerSessions();
-		}
-	}
-
-	public void StartActivePlayerSessions()
-	{
-		if (ActivePlayer.Authorized)
-		{
-			// Load IP info
-			IPAddress[] IPs = GetClientIPAddresses();
-			ActiveSessions = new Session[IPs.Length];
-
-			int i = 0;
-			foreach (var IP in IPs)
-			{
-				// Start session on each ip
-				ActiveSessions[i] = new Session();
-				ActiveSessions[i].IP = IP;
-
-				bool Created = ActiveSessions[i].Create();
-				if (Created)
-				{
-					Debug.Log
-					(
-						string.Format("{0} started session on {1}:{2}",
-						ActivePlayer.Nickname,
-						ActiveSessions[i].IP,
-						ActiveSessions[i].TCPServerPort)
-					);
-				}
-
-				i++;
-			}
-		}
-	}
-
-	public WebRequest GeneratePostRequest(string ServiceName, Dictionary<string, string> Params)
-	{
-		WebRequest Request = WebRequest.Create( string.Format("{0}{1}.php", ServicesPath, ServiceName) );
-		Request.Method = "POST";
-
-		// Convert dictionary values to post format string
-		int ParamsWritten = 0;
-		string Data = string.Empty;
-		foreach (var Pair in Params)
-		{
-			Data += string.Format("{0}{1}={2}", ((ParamsWritten > 0) ? "&" : ""), Pair.Key, Pair.Value);
-			ParamsWritten++;
-		}
-		byte[] DataBytes = Encoding.UTF8.GetBytes(Data);
-
-		Request.ContentType = "application/x-www-form-urlencoded";
-		Request.ContentLength = DataBytes.Length;
-
-		// Write request data
-		Stream RequestStream = Request.GetRequestStream();
-		RequestStream.Write(DataBytes, 0, DataBytes.Length);
-		RequestStream.Close();
-
-		return Request;
-	}
-
-	public string GetResponseString(WebRequest Request)
-	{
-		WebResponse Response = Request.GetResponse();
-		return new StreamReader(Response.GetResponseStream()).ReadToEnd().Trim();
-	}
-
-	public byte[] GetResponseData(WebRequest Request)
-	{
-		WebResponse Response = Request.GetResponse();
-		return new BinaryReader(Response.GetResponseStream()).ReadBytes((int) Response.ContentLength);
-	}
-
-	public IPAddress[] GetClientIPAddresses()
+	
+	public IPAddress[] GetNetworkIPAddresses()
 	{
 		List<IPAddress> Addresses = new List<IPAddress>();
 
@@ -145,5 +54,25 @@ public sealed class NetworkController
 		}
 
 		return Addresses.ToArray();
+	}
+
+	public string[] LoadNetworkPartners()
+	{
+		OnlineGameState GameState = OnlineGameState.Instance;
+		if (GameState.Player != null)
+		{
+			HttpWebRequest Request = WebServices.GeneratePostRequest
+			(
+				"list",
+				new Dictionary<string, string>()
+				{
+					{ "sender", OnlineGameState.Instance.Player.Id.ToString() }
+				}
+			);
+
+			return WebServices.GetResponseString(Request).Split('\n');
+		}
+
+		return null;
 	}
 }

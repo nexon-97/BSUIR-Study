@@ -1,22 +1,24 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System;
+using System.Text;
 using UnityEngine;
 using Nexon;
 
 public sealed class SessionSync
 {
 	#region Fields
+	private IPAddress _IP;
+
 	private TcpListener _TCPServer;
 	private TcpClient _TCPClient;
-	private UdpClient _UDPClient;
+
+	private AsyncMessageProcessor _MessageProcessor;
 
 	private int _TCPServerPort;
-	private int _UDPHostPort;
-
 	private bool _ConnectionActive;
 
-	private IPAddress _IP;
+	private static byte[] buffer = new byte[1024];
 	#endregion
 
 	#region Properties
@@ -44,26 +46,22 @@ public sealed class SessionSync
 		}
 	}
 
-	public int TCPServerPort
+	public TcpClient ConnectedPartner
 	{
-		get { return _TCPServerPort; }
-		set
-		{
-			if (!ConnectionActive)
-			{
-				_TCPServerPort = value;
-			}
-		}
+		get; set;
 	}
 
-	public int UDPPort
+	public int TCPPort
 	{
-		get { return _UDPHostPort; }
+		get
+		{
+			return _TCPServerPort;
+		}
 		set
 		{
-			if (!ConnectionActive)
+			if (!_ConnectionActive)
 			{
-				_UDPHostPort = value;
+				_TCPServerPort = value;
 			}
 		}
 	}
@@ -99,12 +97,68 @@ public sealed class SessionSync
 		{
 			_TCPServerPort = ServerEndPoint.Port;
 		}
-
 		_ConnectionActive = true;
+
+		_TCPServer.BeginAcceptTcpClient(new AsyncCallback(PartnerConnected), null);
 	}
 
-	public TCPRequest CreateRequest(TCPCommand Command, byte[] Data)
+	public bool ConnectToPartner(Session PartnerSession, bool IsResponse)
 	{
-		return new TCPRequest(Command, Data);
+		_TCPClient = new TcpClient();
+		_TCPClient.Connect(PartnerSession.IP, PartnerSession.TCPServerPort);
+
+		if (!IsResponse)
+		{
+			// Notify partner, that he should accept player connection
+			SendTCPCommand(TCPCommand.PartnerConnectRequested, OnlineGameState.Instance.Player.Id.ToString());
+
+			// Open waiting message...
+		}
+
+		return false;
+	}
+
+	// Callback, when partner has been connected
+	public void PartnerConnected(IAsyncResult Result)
+	{
+		TcpClient Client = TCPServerSocket.EndAcceptTcpClient(Result);
+		_MessageProcessor = new AsyncMessageProcessor(Client);
+
+		_MessageProcessor.StartMessageReceiveLoop();
+	}
+
+	public void SendTCPCommand(TCPCommand Command, string data = null)
+	{
+		try
+		{
+			NetworkStream DataStream = _TCPClient.GetStream();
+
+			TCPMessage Message = new TCPMessage(Command, data);
+			byte[] Bytes = Encoding.UTF8.GetBytes(Message.ToString());
+			DataStream.Write(Bytes, 0, Bytes.Length);
+
+			//Debug.LogError("Command sent: " + Command.ToString());
+		}
+		catch (Exception e)
+		{
+			Debug.LogError("Command not sent. Reason: " + e.Message);
+		}
+	}
+
+	public void SendTCPMessage(TCPMessage Message)
+	{
+		try
+		{
+			NetworkStream DataStream = _TCPClient.GetStream();
+
+			byte[] Bytes = Encoding.UTF8.GetBytes(Message.ToString());
+			DataStream.Write(Bytes, 0, Bytes.Length);
+
+			//Debug.LogError("Command sent: " + Message.Command.ToString());
+		}
+		catch (Exception e)
+		{
+			Debug.LogError("Command not sent. Reason: " + e.Message);
+		}
 	}
 }

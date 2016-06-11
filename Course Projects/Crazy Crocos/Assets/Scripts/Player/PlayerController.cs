@@ -1,65 +1,30 @@
 ﻿using UnityEngine;
 using System;
+using Nexon;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : ReplicatedObject
 {
 	public float MovementSpeed;
 	public float MaxSpeed;
 	public float JumpHeight;
 	public float distToGround;
-	public bool ControlLayout;
     public float BrakeForce;
 	public int Team;
 	public bool DisableMovement;
 
-	public GameObject [] TeleportPoints = new GameObject[10];
-	private KeyCode [,] TeleportKeys = new KeyCode[2, 10]
-	{
-		{
-			KeyCode.Alpha0,
-			KeyCode.Alpha1,
-			KeyCode.Alpha2,
-			KeyCode.Alpha3,
-			KeyCode.Alpha4,
-			KeyCode.Alpha5,
-			KeyCode.Alpha6,
-			KeyCode.Alpha7,
-			KeyCode.Alpha8,
-			KeyCode.Alpha9
-		},
-		{
-			KeyCode.Keypad0,
-			KeyCode.Keypad1,
-			KeyCode.Keypad2,
-			KeyCode.Keypad3,
-			KeyCode.Keypad4,
-			KeyCode.Keypad5,
-			KeyCode.Keypad6,
-			KeyCode.Keypad7,
-			KeyCode.Keypad8,
-			KeyCode.Keypad9
-		}
-	};
-
 	private bool CanJump;
 	private Rigidbody2D PhysicBody;
+	private float GlobalTime;
+
+	private Vector3 NetworkPosition;
+	private Vector2 NetworkVelocity;
+	private bool PendingNetworkUpdate;
+
+	public NetworkPlayer Owner;
 
 	private void Start()
     {
 		PhysicBody = GetComponent<Rigidbody2D>();
-	}
-
-	// Update is for cheat purpose only
-	private void Update()
-	{
-		int LayoutIndex = (ControlLayout) ? 1 : 0;
-		for (int i = 0; i < 10; i++)
-		{
-			if (Input.GetKeyDown(TeleportKeys[LayoutIndex, i]))
-			{
-				TeleportToObject(TeleportPoints[i]);
-			}
-		}	
 	}
 
     private void FixedUpdate()
@@ -68,16 +33,8 @@ public class PlayerController : MonoBehaviour
 
 		if (!DisableMovement)
 		{
-			if (ControlLayout == false)
-			{
-				MovementX = Input.GetAxisRaw("Horizontal");
-				MovementY = Input.GetAxisRaw("Vertical");
-			}
-			else
-			{
-				MovementX = Input.GetAxisRaw("Horizontal 2nd");
-				MovementY = Input.GetAxisRaw("Vertical 2nd");
-			}
+			MovementX = Input.GetAxisRaw("Horizontal");
+			MovementY = Input.GetAxisRaw("Vertical");
 		}
 
 		float VelocitySign = (MovementX >= 0.0f) ? 1.0f : -1.0f;
@@ -94,6 +51,36 @@ public class PlayerController : MonoBehaviour
 		}
 
 		Brake();
+
+		GlobalTime += Time.fixedDeltaTime;
+
+		// Send sync data to partner
+		if (!DisableMovement && GlobalTime >= 1.0f)
+		{
+			GlobalTime = 0.0f;
+
+			OnlineGameState GameState = OnlineGameState.Instance;
+
+			// Send player position and velocity
+			string UpdatePackage = string.Format(
+				"{0}${1}${2}${3}",
+				transform.localPosition.x,
+				transform.localPosition.y,
+				PhysicBody.velocity.x,
+				PhysicBody.velocity.y
+			);
+			TCPMessage Message = new TCPMessage(TCPCommand.PlayerControllerUpdate, UpdatePackage);
+			GameState.SendTCPMessageToPartner(Message);
+		}
+		else if (DisableMovement && PendingNetworkUpdate)
+		{
+			PhysicBody.isKinematic = true;
+			GetComponent<BoxCollider2D>().enabled = false;
+
+			PendingNetworkUpdate = false;
+			transform.localPosition = NetworkPosition;
+			PhysicBody.velocity = NetworkVelocity;
+		}
     }
 
 	private bool IsGrounded()
@@ -129,16 +116,15 @@ public class PlayerController : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	public void TeleportToPoint(Vector3 Point)
+	public void SetNetworkController()
 	{
-		transform.position = Point;
+		OnlineGameState.Instance.PartnerController = this;
 	}
 
-	public void TeleportToObject(GameObject Object)
+	public void RegisterNetworkUpdate(Vector3 position, Vector2 velocity)
 	{
-		if (Object != null)
-		{
-			transform.position = Object.transform.position;
-		}
+		NetworkPosition = position;
+		NetworkVelocity = velocity;
+		PendingNetworkUpdate = true;
 	}
 }

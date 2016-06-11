@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Nexon;
 
 public class LevelController : MonoBehaviour
 {
@@ -41,9 +42,7 @@ public class LevelController : MonoBehaviour
 
 	private void Start()
 	{
-		// Create player and level managers
 		LevelManager.CreateInstance();
-		PlayerManager.CreateInstance();
 
 		controllerSample = this;
 
@@ -59,33 +58,55 @@ public class LevelController : MonoBehaviour
 	private void SpawnPlayers()
 	{
 		int [] PlayerPrefabsId = new int[2];
-		PlayerPrefabsId[0] = PlayerManager.Instance.ActivePlayer.LeftTeam;
-		PlayerPrefabsId[1] = PlayerManager.Instance.ActivePlayer.RightTeam;
 
+		OnlineGameState GameState = OnlineGameState.Instance;
+		if (GameState.Player != null && GameState.Partner != null)
+		{
+			int PlayerOrder = GameState.Player.OrderInTeam;
+			int PartnerOrder = (PlayerOrder == 0) ? 1 : 0;
+
+			PlayerPrefabsId[PlayerOrder] = GameState.Player.CrocoIndex;
+			PlayerPrefabsId[PartnerOrder] = GameState.Partner.CrocoIndex;
+		}
+		else
+		{
+			PlayerPrefabsId[0] = 0;
+			PlayerPrefabsId[1] = 1;
+		}
+		
 		for (int i = 0; i < 2; i++)
 		{
 			GameObject PlayerObject = Instantiate(PlayerVisualInfoStorage.GetPlayerPrefab(PlayerPrefabsId[i]));
 			PlayerObject.transform.position = TeamSpawnPoints[i].transform.position;
 
-			PlayerController controller = PlayerObject.GetComponent<MonoBehaviour>() as PlayerController;
+			PlayerController controller = PlayerObject.GetComponent<PlayerController>() as PlayerController;
 			controller.Team = PlayerPrefabsId[i];
-			controller.ControlLayout = (i > 0);
+			
+			if (GameState.DataLoaded)
+			{
+				controller.DisableMovement = (i != GameState.Player.OrderInTeam);
+				controller.Owner = (i == GameState.Player.OrderInTeam) ? GameState.Player : GameState.Partner;
+
+				if (i != GameState.Player.OrderInTeam)
+				{
+					controller.SetNetworkController();
+				}
+			}
+			
 			PlayerControllers[i] = controller;
 		}
 	}
 
 	private void SpawnGems()
 	{
-		int[] PlayerGemsId = new int[2];
-		PlayerGemsId[0] = PlayerManager.Instance.ActivePlayer.LeftTeam;
-		PlayerGemsId[1] = PlayerManager.Instance.ActivePlayer.RightTeam;
-
 		for (int i = 0; i < TeamGemsSpawnPoints.Length; i++)
 		{
-			int GemTeam = PlayerGemsId[TeamGemsOwner[i]];
+			int GemTeam = TeamGemsOwner[i];
+
 			GameObject Gem = Instantiate(PlayerVisualInfoStorage.GetGemPrefab(GemTeam));
 			PickupBehaviour gemController = Gem.GetComponent<PickupBehaviour>();
 			gemController.Team = GemTeam;
+
 			Gem.transform.position = TeamGemsSpawnPoints[i].transform.position;
 		}
 	}
@@ -95,7 +116,7 @@ public class LevelController : MonoBehaviour
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 
-	public void SetLevelFailed()
+	public void SetLevelFailed(bool FromReplication = false)
 	{
 		levelState = LevelState.Failed;
 		gameFailedPanel.SetActive(true);
@@ -106,6 +127,12 @@ public class LevelController : MonoBehaviour
 			FailSound.volume = GameSettings.ActiveSettings.SoundVolume;
 			FailSound.mute = false;
 			FailSound.Play();
+		}
+
+		if (!FromReplication)
+		{
+			TCPMessage FailMessage = new TCPMessage(TCPCommand.LevelFailed);
+			OnlineGameState.Instance.SendTCPMessageToPartner(FailMessage);
 		}
 	}
 
@@ -119,7 +146,9 @@ public class LevelController : MonoBehaviour
 		FinalStarsImage.GetComponent<Image>().sprite = StarImagesStorage.GetStarImage(StarsCount);
 
 		// Update level stats
-		LevelStats LevelStats = PlayerManager.Instance.ActivePlayer.LevelsInfo[Transition.CurrentLevelId];
+		OnlineGameState GameState = OnlineGameState.Instance;
+
+		LevelStats LevelStats = GameState.Team.Save.LevelsInfo[Transition.CurrentLevelId];
 		if (!LevelStats.Passed)
 		{
 			LevelStats.Minutes = (int)LevelTime / 60;
@@ -133,26 +162,20 @@ public class LevelController : MonoBehaviour
 		}
 
 		LevelStats.Stars = StarsCount;
-		PlayerManager.Instance.ActivePlayer.LevelsInfo[Transition.CurrentLevelId] = LevelStats;
+		GameState.Team.Save.LevelsInfo[Transition.CurrentLevelId] = LevelStats;
 
 		// Unlock next level
 		if (LevelManager.Instance.LevelsCount > Transition.CurrentLevelId + 1)
 		{
-			PlayerManager.Instance.ActivePlayer.LevelsInfo[Transition.CurrentLevelId + 1].Available = true;
+			GameState.Team.Save.LevelsInfo[Transition.CurrentLevelId + 1].Available = true;
 		}
 
-		PlayerManager.Instance.ActivePlayer.SaveToFile();
-	}
-	
-	public int GetTeamLocalId(int team)
-	{
-		return (PlayerManager.Instance.ActivePlayer.LeftTeam == team) ? 0 : 1;
+		GameState.Team.Save.SaveToServer(GameState.Team.Id);
 	}
 
 	public void AddGem(int team)
 	{
-		int TeamId = GetTeamLocalId(team);
-		LevelGems[TeamId]++;
+		LevelGems[team]++;
 
 		int GemsFoundFactor = 0;
 		const int TeamsCount = 2;

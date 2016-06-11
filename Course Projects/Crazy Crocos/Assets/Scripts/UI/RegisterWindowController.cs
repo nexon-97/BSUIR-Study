@@ -10,7 +10,7 @@ public class RegisterWindowController : MonoBehaviour
 	
 	public void Register()
 	{
-		WebRequest RegisterRequest = NetworkController.Instance.GeneratePostRequest(
+		HttpWebRequest RegisterRequest = WebServices.GeneratePostRequest(
 			"register",
 			new Dictionary<string, string>()
 			{
@@ -20,7 +20,7 @@ public class RegisterWindowController : MonoBehaviour
 		);
 		NameInput.text = PasswordInput.text = string.Empty;
 
-		string Response = NetworkController.Instance.GetResponseString(RegisterRequest).Trim();
+		string Response = WebServices.GetResponseString(RegisterRequest).Trim();
 		if (Response.IndexOf("OK") == 0)
 		{
 			const string RegisterSuccessMessage = "Thanks for registering!\nNow you can log in with your credentials";
@@ -28,8 +28,7 @@ public class RegisterWindowController : MonoBehaviour
 		}
 		else
 		{
-			const string FailMessage = "Failed to register";
-			MainMenuController.Instance.ShowMessageBox(Response);
+			MainMenuController.Instance.ShowMessageBox(Response.Substring(Response.IndexOf(":") + 1).Trim());
 		}
 	}
 }

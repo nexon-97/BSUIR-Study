@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+using Nexon;
 
 public class LevelSelectorButton : MonoBehaviour
 {
@@ -10,7 +10,10 @@ public class LevelSelectorButton : MonoBehaviour
 
 	public void LoadLevel()
 	{
-		SceneManager.LoadScene(LevelName);
+		OnlineGameState GameState = OnlineGameState.Instance;
+		GameState.SendTCPMessageToPartner(new TCPMessage(TCPCommand.StartLevel, LevelName));
+
+		Transition.Instance.GoToLevel(LevelName);
 	}
 
 	public void Unlock()

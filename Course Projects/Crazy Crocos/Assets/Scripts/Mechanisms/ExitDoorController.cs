@@ -13,9 +13,8 @@ public class ExitDoorController : MonoBehaviour
 			PlayerController controller = collided.gameObject.GetComponent<MonoBehaviour>() as PlayerController;
 			if (controller != null)
 			{
-				int TeamId = LevelController.GetInstance().GetTeamLocalId(controller.Team);
-				PlayerInside[TeamId] = true;
-				Controllers[TeamId] = controller;
+				PlayerInside[controller.Team] = true;
+				Controllers[controller.Team] = controller;
 
 				if (PlayerInside[0] && PlayerInside[1])
 				{
@@ -37,9 +36,8 @@ public class ExitDoorController : MonoBehaviour
 			PlayerController controller = collided.gameObject.GetComponent<MonoBehaviour>() as PlayerController;
 			if (controller != null)
 			{
-				int TeamId = LevelController.GetInstance().GetTeamLocalId(controller.Team);
-				PlayerInside[TeamId] = false;
-				Controllers[TeamId] = null;
+				PlayerInside[controller.Team] = false;
+				Controllers[controller.Team] = null;
 			}
 		}
 	}

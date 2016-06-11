@@ -6,6 +6,9 @@ public class Transition : MonoBehaviour
 	public static string NextLevelName;
 	public static int CurrentLevelId;
 
+	public static string PendingLevelName;
+	public static Transition Instance;
+
 	void Start()
 	{
 		CurrentLevelId = GetCurrentLevelId();
@@ -17,6 +20,8 @@ public class Transition : MonoBehaviour
 		{
 			NextLevelName = "-1";
 		}
+
+		Instance = this;
 	}
 
 	public int GetCurrentLevelId()
@@ -42,26 +47,32 @@ public class Transition : MonoBehaviour
 		}
 	}
 
-	public void StartGame()
-	{
-		if (PlayerManager.Instance.ActivePlayer != null)
-		{
-			SwitchToLevelSelectionScene();
-		}
-	}
-
 	public void SwitchToLevelSelectionScene()
 	{
-		SceneManager.LoadScene("LevelSelectionScene");
+		GoToLevel("LevelSelectionScene");
 	}
 
 	public void SwitchToMainMenu()
 	{
-		SceneManager.LoadScene("MainMenuScene");
+		GoToLevel("MainMenuScene");
 	}
 
 	public void QuitGame()
 	{
 		Application.Quit();
+	}
+
+	public void GoToLevel(string LevelName)
+	{
+		PendingLevelName = LevelName;
+	}
+
+	private void Update()
+	{
+		if (PendingLevelName != null)
+		{
+			SceneManager.LoadScene(PendingLevelName);
+			PendingLevelName = null;
+		}
 	}
 }

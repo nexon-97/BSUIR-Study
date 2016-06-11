@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class PoisonAnimationController : MonoBehaviour
 {
@@ -23,7 +22,6 @@ public class PoisonAnimationController : MonoBehaviour
 		{
 			int TeamId = (KillPlayer[0]) ? 1 : 0;
 			int Team = LevelController.PlayerControllers[TeamId].Team;
-			srenderer.color = PlayerVisualInfoStorage.GetPlayerColor(Team);
 		}
 	}
 
@@ -31,15 +29,15 @@ public class PoisonAnimationController : MonoBehaviour
 	{
 		if (collided.gameObject.tag.Equals("Player"))
 		{
-			PlayerController controller = collided.gameObject.GetComponent<MonoBehaviour>() as PlayerController;
-			if (controller != null)
+			PlayerController controller = collided.gameObject.GetComponent<PlayerController>();
+			// React only to players, controlled by a real player
+			if (controller != null && !controller.DisableMovement)
 			{
-				int ControllerTeamId = LevelController.GetInstance().GetTeamLocalId(controller.Team);
-				if (KillPlayer[ControllerTeamId])
+				/*if (KillPlayer[controller.Owner.OrderInTeam])
 				{
 					controller.Kill();
 					LevelController.GetInstance().SetLevelFailed();
-				}
+				}*/
 			}	
 		}
 	}

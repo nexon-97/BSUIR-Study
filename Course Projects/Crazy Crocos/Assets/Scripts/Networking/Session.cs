@@ -2,38 +2,42 @@
 using System;
 using System.Globalization;
 using System.Collections.Generic;
+using Nexon;
 
 public class Session
 {
+	#region Fields
 	public int Id;
-	public NetworkPlayer User;
 	public IPAddress IP;
 	public DateTime LastActivity;
+	public NetworkPlayer Owner;
 
 	private SessionSync Sync;
+	#endregion
 
+	#region Properties
 	public int TCPServerPort
 	{
 		get
 		{
-			return (Sync != null) ? Sync.TCPServerPort : -1;
+			return Sync.TCPPort;
 		}
 	}
 
-	public int UDPPort
+	public SessionSync Context
 	{
 		get
 		{
-			return (Sync != null) ? Sync.UDPPort : -1;
+			return Sync;
 		}
 	}
+	#endregion
 
-
-	public bool Create()
+	public bool Create(NetworkPlayer _Owner)
 	{
-		User = NetworkController.Instance.ActivePlayer;
+		Owner = _Owner;
 
-		if (User != null)
+		if (Owner != null)
 		{
 			Sync = new SessionSync(IP);
 			Sync.Init();
@@ -42,20 +46,20 @@ public class Session
 			{
 				NetworkController Network = NetworkController.Instance;
 
-				WebRequest Request = Network.GeneratePostRequest
+				HttpWebRequest Request = WebServices.GeneratePostRequest
 				(
 					"session",
 					new Dictionary<string, string>()
 					{
 						{ "action", "create" },
-						{ "user_id", User.Id.ToString() },
+						{ "user_id", Owner.Id.ToString() },
 						{ "address", IP.ToString() },
 						{ "tcp", TCPServerPort.ToString() },
-						{ "udp", UDPPort.ToString() }
+						{ "udp", "0" }
 					}
 				);
 
-				string Response = Network.GetResponseString(Request);
+				string Response = WebServices.GetResponseString(Request);
 				if (Response.IndexOf("OK") == 0)
 				{
 					string SessionIdString = Response.Substring(Response.IndexOf(":") + 1).Trim();
@@ -73,9 +77,24 @@ public class Session
 		return false;
 	}
 
+	public bool Drop()
+	{
+		HttpWebRequest Request = WebServices.GeneratePostRequest(
+			"session",
+			new Dictionary<string, string>()
+			{
+				{ "action"  , "drop"        },
+				{ "id"      , Id.ToString() }
+			}
+		);
+
+		string Response = WebServices.GetResponseString(Request).Trim();
+		return Response.Equals("OK");
+	}
+
 	public bool UpdateOnServer()
 	{
-		WebRequest Request = NetworkController.Instance.GeneratePostRequest(
+		HttpWebRequest Request = WebServices.GeneratePostRequest(
 			"session",
 			new Dictionary<string, string>()
 			{
@@ -84,13 +103,13 @@ public class Session
 			}
 		);
 
-		string Response = NetworkController.Instance.GetResponseString(Request);
+		string Response = WebServices.GetResponseString(Request);
 		return (Response.Equals("OK"));
 	}
 
 	public bool LoadFromServer(int Id)
 	{
-		WebRequest Request = NetworkController.Instance.GeneratePostRequest(
+		HttpWebRequest Request = WebServices.GeneratePostRequest(
 			"session",
 			new Dictionary<string, string>()
 			{
@@ -99,18 +118,44 @@ public class Session
 			}
 		);
 
-		string Response = NetworkController.Instance.GetResponseString(Request).Trim();
+		string Response = WebServices.GetResponseString(Request).Trim();
 		if (!Response.Equals("NOT FOUND"))
 		{
 			string[] SessionParts = Response.Split('|');
 			
 			Id = int.Parse(SessionParts[0]);
-			User = NetworkController.Instance.ActivePlayer;
+			IP = IPAddress.Parse(SessionParts[2]);
+
+			const string DateFormat = "yyyy-MM-dd HH:mm:ss";
+			LastActivity = DateTime.ParseExact(SessionParts[5], DateFormat, CultureInfo.InvariantCulture);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public bool FindByUserId(int Id)
+	{
+		HttpWebRequest Request = WebServices.GeneratePostRequest(
+			"session",
+			new Dictionary<string, string>()
+			{
+				{ "action" , "get"         },
+				{ "user"   , Id.ToString() }
+			}
+		);
+
+		string Response = WebServices.GetResponseString(Request).Trim();
+		if (!Response.Equals("NOT FOUND"))
+		{
+			string[] SessionParts = Response.Split('|');
+
+			Id = int.Parse(SessionParts[0]);
 			IP = IPAddress.Parse(SessionParts[2]);
 
 			Sync = new SessionSync(IP);
-			Sync.TCPServerPort = int.Parse(SessionParts[3]);
-			Sync.UDPPort = int.Parse(SessionParts[4]);
+			Sync.TCPPort = int.Parse(SessionParts[3]);
 
 			const string DateFormat = "yyyy-MM-dd HH:mm:ss";
 			LastActivity = DateTime.ParseExact(SessionParts[5], DateFormat, CultureInfo.InvariantCulture);

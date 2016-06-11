@@ -8,9 +8,9 @@ public class PickupBehaviour : MonoBehaviour
 	{
 		if (collided.gameObject.tag.Equals("Player"))
 		{
-			PlayerController controller = collided.gameObject.GetComponent<MonoBehaviour>() as PlayerController;
+			PlayerController controller = collided.gameObject.GetComponent<PlayerController>() as PlayerController;
 
-			if (controller != null && controller.Team == Team)
+			if (controller != null)
 			{
 				LevelController.GetInstance().AddGem(Team);
 				Destroy(gameObject);

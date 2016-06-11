@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Net;
-using System.Collections.Generic;
 
 public class LogInWindowController : MonoBehaviour
 {
@@ -10,13 +8,15 @@ public class LogInWindowController : MonoBehaviour
 
 	public void LogIn()
 	{
-		bool LoggedIn = NetworkController.Instance.ActivePlayer.LogIn(LoginInput.text, PasswordInput.text);
+		OnlineGameState GameState = OnlineGameState.Instance;
+
+		bool LoggedIn = GameState.Player.LogIn(LoginInput.text, PasswordInput.text);
 		LoginInput.text = PasswordInput.text = string.Empty;
 
 		if (LoggedIn)
 		{
 			// Start player sessions
-			NetworkController.Instance.StartActivePlayerSessions();
+			GameState.Player.StartSessions();
 
 			MainMenuController.Instance.OpenMainLayout();	
 		}	

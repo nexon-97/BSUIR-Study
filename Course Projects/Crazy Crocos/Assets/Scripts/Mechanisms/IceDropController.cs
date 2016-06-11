@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class IceDropController : MonoBehaviour
 {
@@ -15,7 +14,7 @@ public class IceDropController : MonoBehaviour
 	{
 		if (collided.gameObject.tag == "Player")
 		{
-			PlayerController controller = collided.gameObject.GetComponent<MonoBehaviour>() as PlayerController;
+			PlayerController controller = collided.gameObject.GetComponent<PlayerController>();
 			if (controller != null)
 			{
 				controller.Kill();

@@ -8,10 +8,11 @@ public class LevelSelectorPanelController : MonoBehaviour
 	void Start ()
 	{
 		LevelManager.CreateInstance();
-		PlayerManager.CreateInstance();
 
 		string[] Levels = LevelManager.Instance.LevelNames;
-		PlayerInfo ActivePlayerInfo = PlayerManager.Instance.ActivePlayer;
+
+		OnlineGameState GameState = OnlineGameState.Instance;
+		GameSave Save = GameState.Team.Save;
 
 		for (int i = 0; i < Levels.Length; i++)
 		{
@@ -20,16 +21,16 @@ public class LevelSelectorPanelController : MonoBehaviour
 			{
 				button.LevelName = Levels[i];
 
-				if (ActivePlayerInfo.LevelsInfo[i].Available)
+				if (Save.LevelsInfo[i].Available)
 				{
 					button.Unlock();
 
-					int minutes = ActivePlayerInfo.LevelsInfo[i].Minutes;
-					int seconds = ActivePlayerInfo.LevelsInfo[i].Seconds;
+					int minutes = Save.LevelsInfo[i].Minutes;
+					int seconds = Save.LevelsInfo[i].Seconds;
 					button.BestTimeText.GetComponent<Text>().text = string.Format("{0}:{1:00}", minutes, seconds);
 
 					button.StarsImage.GetComponent<Image>().sprite =
-						StarImagesStorage.GetStarImage(ActivePlayerInfo.LevelsInfo[i].Stars);
+						StarImagesStorage.GetStarImage(Save.LevelsInfo[i].Stars);
 				}
 			}
 		}

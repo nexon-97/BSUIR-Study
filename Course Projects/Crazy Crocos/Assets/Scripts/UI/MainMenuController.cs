@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -8,8 +9,11 @@ public class MainMenuController : MonoBehaviour
 	public GameObject SettingsPanel;
 	public GameObject LogInWindow;
 	public GameObject MessageBox;
+	public GameObject PartnerSelectionWindow;
 
-	public Text SelectedSettingsPlayerText;
+	public GameObject PartnersChooseRectContent;
+	public GameObject PartnerButtonPrefab;
+
 	public Text HelloMessageText;
 	public Text OfflineHint;
 	public Text MessageBoxText;
@@ -24,6 +28,7 @@ public class MainMenuController : MonoBehaviour
 	private GameObject[] ScreenStack;
 	private GameObject ActiveScreen;
 	public GameObject LogInPanel;
+	private GameObject[] PartnersButtons;
 
 	public static MainMenuController Instance;
 
@@ -33,6 +38,7 @@ public class MainMenuController : MonoBehaviour
 		SetActiveScreen(MainLayout);
 
 		Instance = this;
+		GameSettings.Load();
 	}
 
 	private void InitScreenStack()
@@ -43,7 +49,8 @@ public class MainMenuController : MonoBehaviour
 			RegisterWindow,
 			SettingsPanel,
 			LogInWindow,
-			MessageBox
+			MessageBox,
+			PartnerSelectionWindow
 		};
 
 		foreach (var Screen in ScreenStack)
@@ -77,17 +84,11 @@ public class MainMenuController : MonoBehaviour
 
 	public void OpenSettingsPanel()
 	{
-		if (PlayerManager.Instance.ActivePlayer != null)
-		{
-			SetActiveScreen(SettingsPanel);
+		SetActiveScreen(SettingsPanel);
 
-			PlayerInfo CurrentInfo = PlayerManager.Instance.ActivePlayer;
-			SelectedSettingsPlayerText.text = string.Format("Selected Player: {0}", CurrentInfo.Name);
-
-			// Create temporary settings
-			TempSettings = new GameSettings(GameSettings.ActiveSettings);
-			UpdatePlayerSettingsVisual();
-		}
+		// Create temporary settings
+		TempSettings = new GameSettings(GameSettings.ActiveSettings);
+		UpdatePlayerSettingsVisual();
 	}
 
 	public void OpenMainLayout()
@@ -99,6 +100,69 @@ public class MainMenuController : MonoBehaviour
 	{
 		MessageBoxText.text = Text;
 		SetActiveScreen(MessageBox);
+	}
+
+	public void OpenPartnerChooseWindow()
+	{
+		SetActiveScreen(PartnerSelectionWindow);
+
+		// Load players list
+		LoadNetworkPlayersList();
+	}
+
+	private void ClearNetworkPlayersList()
+	{
+		if (PartnersButtons != null)
+		{
+			foreach (var Button in PartnersButtons)
+			{
+				Button.SetActive(false);
+				Destroy(Button);
+			}
+
+			PartnersButtons = null;
+		}
+	}
+
+	public void LoadNetworkPlayersList()
+	{
+		// Fetch players list
+		string[] Partners = NetworkController.Instance.LoadNetworkPartners();
+
+		ClearNetworkPlayersList();
+		PartnersButtons = new GameObject[Partners.Length];
+
+		for (int i = 0; i < Partners.Length; i++)
+		{
+			string[] LineParts = Partners[i].Split('|');
+
+			int Id = int.Parse(LineParts[0]);
+			string Login = LineParts[1];
+			bool Online = LineParts[2].Equals("1");
+
+			if (!Online)
+			{
+				Login += " (Offline)";
+			}
+
+			GameObject Button = Instantiate(PartnerButtonPrefab);
+			Button.transform.SetParent(PartnersChooseRectContent.transform);
+			Button.GetComponentInChildren<Text>().text = Login;
+			Button.GetComponentInChildren<Button>().interactable = Online;
+
+			Button.GetComponentInChildren<PartnerButtonController>().Id = Id;
+
+			int YCoord = 180 - 50 * i;
+			RectTransform Transform = Button.GetComponent<RectTransform>();
+			Vector3 WidgetPos = Transform.localPosition;
+			WidgetPos.y = YCoord;
+			WidgetPos.x = -245;
+			Transform.localPosition = WidgetPos;
+
+			Transform.sizeDelta = new Vector2(-35.0f, 45.0f);
+
+			PartnersButtons[i] = Button;
+		}
 	}
 
 	public void OnApplySettings()
@@ -155,7 +219,7 @@ public class MainMenuController : MonoBehaviour
 
 	public void UpdateNetworkInfo()
 	{
-		bool PlayerAuthorized = NetworkController.Instance.ActivePlayer.Authorized;
+		bool PlayerAuthorized = OnlineGameState.Instance.Player.Authorized;
 
 		UpdateHelloMessageText();
 
@@ -166,7 +230,7 @@ public class MainMenuController : MonoBehaviour
 
 	public void UpdateHelloMessageText()
 	{
-		NetworkPlayer ActivePlayer = NetworkController.Instance.ActivePlayer;
+		NetworkPlayer ActivePlayer = OnlineGameState.Instance.Player;
 		if (ActivePlayer != null && ActivePlayer.Authorized)
 		{
 			HelloMessageText.text = string.Format("Hello, {0}!", ActivePlayer.Nickname);

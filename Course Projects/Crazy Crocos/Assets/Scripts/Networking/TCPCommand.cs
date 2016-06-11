@@ -1,15 +1,17 @@
 ﻿namespace Nexon
 {
-	public enum TCPCommand
+	public enum TCPCommand : int
 	{
-		PartnerLoggedIn = 1,
-		PartnerLoggedOut = 2,
-		Timeout = 3,
-		PauseRequest = 4,
-		ExitRequest = 5,
-		ChatMessage = 6,
-		PartnerConnectRequested = 7,
-		PartnerDisconnected = 8,
-		ReadyToStartLevel = 9,
+		PauseRequest = 1,
+		ExitRequest = 2,
+		ChatMessage = 3,
+		PartnerConnectRequested = 4,
+		ReadyToStartLevel = 5,
+		OpenSwitchLevelScene = 6,
+		AcceptConnectRequest = 7,
+		StartLevel = 8,
+		PlayerControllerUpdate = 9,
+		LevelFailed = 10,
+		ObjectReplication = 11
 	}
 }
